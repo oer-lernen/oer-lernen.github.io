@@ -59,7 +59,7 @@ const LEGAL_CONFIG = {
     width: 620,
     height: 520,
     contentHtml: `
-      <div class="legal-header-meta">Erstellt mit Hilfe von Claude Opus 3.5 und Gemini 3.8 Flash</div>
+      <div class="legal-header-meta">Erstellt mit Hilfe von Claude Opus 5.5 und Gemini 3.8 Flash</div>
       <hr class="legal-divider">
       <h2 class="legal-title">Impressum</h2>
       <hr class="legal-divider">
