@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob: file:; frame-src 'self' data: blob: file:; img-src 'self' data: blob: file:; font-src 'self' data:; connect-src 'none';">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="DSGVO-konformes Retro-LernOS für den Deutschunterricht in der Sekundarstufe: Wortarten-Labor, Wortwurfbude, Kasus-Teich und Zeitfaden.">
+  <title>Deutsch-LernOS | Grammatik-Übungen Sekundarstufe</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Desktop-Arbeitsbereich -->
+  <main class="desktop" id="desktop">
+    <!-- Desktop Icons (automatisch befüllt via JS) -->
+    <nav class="desktop-icons" id="desktop-icons" aria-label="Desktop-Programme"></nav>
+
+    <!-- Fenster-Container -->
+    <div class="window-container" id="window-container"></div>
+  </main>
+
+  <!-- Startmenü Popup -->
+  <aside class="start-menu" id="start-menu" aria-label="Startmenü">
+    <div class="start-header">
+      <span>💾</span>
+      <span>Deutsch-LernOS</span>
+    </div>
+
+    <div class="menu-category">Übungsprogramme</div>
+    <div class="menu-item" data-app="wortarten-labor" role="button" tabindex="0">
+      <span class="menu-icon">🧪</span>
+      <span>Das Wortarten-Labor</span>
+    </div>
+    <div class="menu-item" data-app="wortwurfbude" role="button" tabindex="0">
+      <span class="menu-icon">🎪</span>
+      <span>Die Wortwurfbude</span>
+    </div>
+    <div class="menu-item" data-app="kasus-teich" role="button" tabindex="0">
+      <span class="menu-icon">🐟</span>
+      <span>Der Kasus-Teich</span>
+    </div>
+    <div class="menu-item" data-app="zeitfaden" role="button" tabindex="0">
+      <span class="menu-icon">⏳</span>
+      <span>Der Zeitfaden</span>
+    </div>
+
+    <hr class="menu-divider">
+
+    <div class="menu-category">Rechtliches & Hinweise</div>
+    <div class="menu-item" data-legal="datenschutz" role="button" tabindex="0">
+      <span class="menu-icon">🍪</span>
+      <span>Datenschutz</span>
+    </div>
+    <div class="menu-item" data-legal="impressum" role="button" tabindex="0">
+      <span class="menu-icon">💮</span>
+      <span>Impressum</span>
+    </div>
+  </aside>
+
+  <!-- Taskleiste -->
+  <footer class="taskbar" id="taskbar">
+    <div class="taskbar-left">
+      <button class="start-btn" id="start-btn" aria-label="Startmenü öffnen">
+        <span>💾</span>
+        <span>Start</span>
+      </button>
+      <div class="taskbar-windows" id="taskbar-windows" aria-label="Geöffnete Fenster"></div>
+    </div>
+
+    <div class="taskbar-right">
+      <button class="tray-btn" id="mute-btn" title="Ton stummschalten" aria-label="Mono-Sound Umschalter">
+        <span id="mute-icon">🔊</span>
+        <span>Sound</span>
+      </button>
+      <div class="clock-display" id="clock-display" aria-label="Uhrzeit">12:00</div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/sound.js"></script>
+  <script src="js/window-manager.js"></script>
+  <script src="js/desktop.js"></script>
+</body>
+</html>
