@@ -23,4 +23,11 @@ PUNKT   satzzeichen-detektiv-PUNKT.html          # Deutsch, Satzzeichen
 ZWERG   maerchen-quiz-ZWERG.html                 # Quiz: Märchen
 NOMEN   wortarten-quiz-NOMEN.html                # Quiz: Wortarten
 
+KORAN   der-koran-im-islam-KORAN.html                 # Religion, Heilige Schriften: Der Koran im Islam
+TANAK   der-tanach-im-judentum-TANAK.html             # Religion, Heilige Schriften: Der Tanach im Judentum
+BIBEL   die-bibel-im-christentum-BIBEL.html           # Religion, Heilige Schriften: Die Bibel im Christentum
+OFFEN   vergleich-offenbarung-und-aufbau-OFFEN.html   # Religion, Heilige Schriften: Vergleich: Offenbarung und Aufbau
+GEBET   vergleich-sprache-gebet-und-ort-GEBET.html    # Religion, Heilige Schriften: Vergleich: Sprache, Gebet und Ort
+GLAUB   heilige-schriften-im-vergleich-GLAUB.html     # Quiz: Heilige Schriften im Vergleich
+
 `);
