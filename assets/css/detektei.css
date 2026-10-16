@@ -135,6 +135,9 @@ html[data-zeit="tag"] .nur-nacht { display: none; }
 .knopf-leise { background: transparent; color: var(--schrift); border-color: var(--schrift); box-shadow: none; }
 .knopf-leise:active { transform: none; }
 .knopf-gelb { background: var(--butter); font-weight: 600; font-size: 18px; }
+/* Ton-Knopf: Das Symbol folgt dem Zustand, den startseite.js in aria-pressed schreibt */
+#ton-knopf[aria-pressed="true"] #ton-aus-bild,
+#ton-knopf:not([aria-pressed="true"]) #ton-an-bild { display: none; }
 
 /* Menü „Für Lehrkräfte“ (details/summary, funktioniert auch ohne JavaScript) */
 .lehrkraefte { position: relative; }

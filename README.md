@@ -25,7 +25,15 @@ Programme/puzzles/    fertige Puzzles und Quizze und die Code-Liste liste.js
    (Der Generator zeigt die fertige Zeile unter „Zeile für die Code-Liste“ an.)
 3. Kontrolle: Auf der Startseite „Für Lehrkräfte“ → „Code-Liste prüfen“.
 
-Die Startseite liest dieselbe Liste: Ein Aktenzeichen öffnet direkt die passende Akte im Quiz-Player.
+Die Startseite liest dieselbe Liste: Ein Aktenzeichen öffnet die passende Datei direkt in der Spiel-Ebene
+(abgeschottet wie im Quiz-Player). Der Quiz-Player selbst bleibt für ältere Links (`Programme/Der-Quiz-Player.html#CODE`)
+und für „Code-Liste prüfen“.
+
+## Spiel-Ebene
+
+- Zurück und Vollbild gibt es nur in der Leiste der Spiel-Ebene. Das Spiel-Fenster darf kein eigenes Vollbild anfordern
+  (`allow="fullscreen 'none'"`); die Spiele blenden ihren Vollbild-Knopf dann aus. Einzeln geöffnet behalten sie ihn.
+- Impressum und Datenschutz öffnen sich aus der Spiel-Ebene in einem neuen Tab, damit der Spielstand erhalten bleibt.
 
 ## Adressen zum Verlinken
 

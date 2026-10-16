@@ -570,7 +570,7 @@
     <p>Diese Ansicht ist für Lehrkräfte: Sie zeigt alle Einträge aus <b>puzzles/liste.js</b> und prüft, ob die Dateien
       im Ordner <b>puzzles</b> liegen.</p>
     <div id="checkBody"></div>
-    <p style="margin-top:24px"><a class="btn btn-quiet" href="#">Zur Code-Eingabe</a></p>
+    <p style="margin-top:24px" id="toHome"><a class="btn btn-quiet" href="#">Zur Code-Eingabe</a></p>
   </section>
 
   <footer class="foot" id="foot"></footer>
@@ -592,6 +592,10 @@
       const S = window.PLAYER_EINSTELLUNGEN || {};
       const $ = s => document.querySelector(s);
       const LOCAL = location.protocol === 'file:';
+      /* ?detektei: Der Player läuft in der Spiel-Ebene von „Komma ermittelt“ („Code-Liste prüfen“).
+         Code-Eingabe und Links zu den Generatoren hat dort die Detektei selbst. */
+      const DETEKTEI = new URLSearchParams(location.search).has('detektei');
+      if (DETEKTEI) $('#toHome').hidden = true;
 
       /* ---------- Logo ---------- */
       const LOGO = ['........XXXXXXX', '........XyyyyyX', 'XXXXXXXdXyyyyyX', 'XrrrrrXdXyyyyyX', 'XhrrrrXdXyyyyyX', 'XrrrrrXdXyyyyyX', 'XrrrrrXdXXXXXXX', 'XrrrrrXddddd...', 'XXXXXXXXXXXXX..', 'XmmmmmXsssssX..', 'XhmmmmXhssssX..', 'XmmmmmXsssssX..', 'XmmmmmXsssssX..', 'XmmmmmXsssssX..', 'XXXXXXXXXXXXX..'];
@@ -662,7 +666,7 @@
       (function foot() {
         const f = $('#foot');
         const s = document.createElement('span'); s.textContent = 'Läuft im Browser, ohne Anmeldung. Es werden keine Namen oder Ergebnisse gespeichert.'; f.append(s);
-        const links = [[S.generatorLink, 'Puzzle erstellen'], [S.quizEditorLink, 'Quiz erstellen']].filter(l => l[0]);
+        const links = DETEKTEI ? [] : [[S.generatorLink, 'Puzzle erstellen'], [S.quizEditorLink, 'Quiz erstellen']].filter(l => l[0]);
         if (links.length) {
           const t = document.createElement('span'); t.append('Für Lehrkräfte: ');
           links.forEach(([href, label], i) => { if (i) t.append(' · '); const a = document.createElement('a'); a.href = href; a.textContent = label; t.append(a); });
@@ -698,6 +702,8 @@
       $('#form').addEventListener('submit', e => { e.preventDefault(); clearTimeout(autoTimer); submit(); });
 
       function fail(text) {
+        /* Aus der Prüfliste heraus ist die Code-Eingabe verdeckt: dann dorthin wechseln, damit die Meldung sichtbar ist */
+        if ($('#home').hidden) { $('#home').hidden = false; $('#check').hidden = true; }
         msg.textContent = text;
         wrap.classList.remove('nope', 'ok'); void wrap.offsetWidth; wrap.classList.add('nope');
         input.focus(); input.select();
@@ -729,6 +735,8 @@
         frame.title = label;
         if (info && info.title) document.title = `${info.title} – ${PAGE_TITLE}`;
         frame.src = fileUrl(entry.file);
+        /* Aus der Prüfliste geöffnet: Der Knopf führt dorthin zurück und sagt das auch */
+        $('#back').textContent = $('#check').hidden ? '← Zurück' : '← Zur Liste';
         view.hidden = false; document.body.style.overflow = 'hidden';
         $('#back').focus();
       }
@@ -740,9 +748,15 @@
         input.value = ''; wrap.classList.remove('ok', 'nope'); msg.textContent = ''; paint();
         input.focus();
       }
-      $('#back').addEventListener('click', e => { e.preventDefault(); history.pushState(null, '', location.pathname + location.search); closePuzzle(); });
+      $('#back').addEventListener('click', e => {
+        e.preventDefault();
+        history.pushState(null, '', location.pathname + location.search + ($('#check').hidden ? '' : '#pruefen'));
+        closePuzzle();
+      });
       $('#copyLink').addEventListener('click', async () => {
-        const url = location.href.split('#')[0] + '#' + (current ? current.code : '');
+        /* In der Detektei den Link für die Klasse kopieren: Startseite mit Aktenzeichen */
+        const url = DETEKTEI && current ? new URL('../#akte/' + current.code, location.href).href
+          : location.href.split('#')[0] + '#' + (current ? current.code : '');
         const btn = $('#copyLink');
         try { await navigator.clipboard.writeText(url); btn.textContent = 'Link kopiert'; }
         catch (e) { window.prompt('Link:', url); }
@@ -794,15 +808,16 @@
 
       /* ---------- Adresszeile: #CODE öffnet direkt, #pruefen zeigt die Prüfansicht ---------- */
       function route() {
-        const h = decodeURIComponent(location.hash.replace(/^#/, '')).trim();
+        let h = '';
+        try { h = decodeURIComponent(location.hash.replace(/^#/, '')).trim(); } catch (e) { h = ''; }   /* kaputte Adresse */
         const isCheck = h.toLowerCase() === 'pruefen' || h.toLowerCase() === 'prüfen';
-        $('#home').hidden = isCheck; $('#check').hidden = !isCheck;
-        if (isCheck) { closePuzzle(); renderCheck(); return; }
+        if (isCheck) { $('#home').hidden = true; $('#check').hidden = false; closePuzzle(); renderCheck(); return; }
         const code = cleanCode(h.replace(/^code=/i, ''));
         if (code.length === 5) {
+          /* Aus der Prüfliste geöffnet: Die Liste bleibt dahinter, „← Zur Liste“ führt dorthin zurück */
           if (current && current.code === code) return;
           input.value = code; paint(); submit();
-        } else closePuzzle();
+        } else { $('#home').hidden = false; $('#check').hidden = true; closePuzzle(); }
       }
       window.addEventListener('popstate', route);
       window.addEventListener('hashchange', route);

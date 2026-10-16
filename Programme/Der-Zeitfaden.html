@@ -2992,6 +2992,11 @@ zwingen zwang gezwungen h
   /* ---------- Kopfleiste ---------- */
   const fsTarget = document.documentElement;
   const fsActive = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  /* Gesperrt = der Browser kann Vollbild, aber die umgebende Seite erlaubt es hier nicht
+     (z. B. in der Spiel-Ebene von „Komma ermittelt“, die selbst einen Vollbild-Knopf hat).
+     Dann gibt es keinen eigenen Knopf. Ohne Vollbild-Funktion (iPhone) bleibt der Knopf mit dem Home-Bildschirm-Tipp. */
+  const fsApi = !!(fsTarget.requestFullscreen || fsTarget.webkitRequestFullscreen);
+  const fsGesperrt = () => fsApi && !(document.fullscreenEnabled || document.webkitFullscreenEnabled);
   function renderBar() {
     bar.innerHTML = '';
     const left = [];
@@ -3017,7 +3022,7 @@ zwingen zwang gezwungen h
       right.push(h('span.btn.px.stage-chip', { title: 'Tempus-Stufe (im Lehrkraft-Menü einstellbar)' }, h('span.lbl', null, 'Stufe '), String(state.stage)));
     }
     right.push(h('button.btn.px.icon', { type: 'button', onclick: toggleSound, 'aria-label': S.on ? 'Ton ausschalten' : 'Ton einschalten', 'aria-pressed': String(S.on) }, icon(S.on ? 'soundOn' : 'soundOff')));
-    right.push(h('button.btn.px.icon', { type: 'button', onclick: toggleFullscreen, 'aria-label': fsActive() ? 'Vollbild beenden' : 'Vollbild' }, icon(fsActive() ? 'compress' : 'expand'), h('span.lbl', null, fsActive() ? 'Fenster' : 'Vollbild')));
+    if (!fsGesperrt()) right.push(h('button.btn.px.icon', { type: 'button', onclick: toggleFullscreen, 'aria-label': fsActive() ? 'Vollbild beenden' : 'Vollbild' }, icon(fsActive() ? 'compress' : 'expand'), h('span.lbl', null, fsActive() ? 'Fenster' : 'Vollbild')));
     right.push(h('button.btn.px', { type: 'button', onclick: openTeacher, 'aria-label': 'Lehrkraft-Menü' }, icon('gear'), h('span.lbl', null, 'Lehrkraft')));
     bar.append(...left, where, ...right);
   }
@@ -3736,7 +3741,7 @@ bild: nacht
     if (pop) { if (e.key === 'Escape') pop.remove(); return; }
     if (e.target && /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    if (e.key === 'f' || e.key === 'F') { toggleFullscreen(); return; }
+    if (e.key === 'f' || e.key === 'F') { if (!fsGesperrt()) toggleFullscreen(); return; }
     if (state.screen !== 'page') return;
     if (e.key === 'ArrowRight') nextPage();
     else if (e.key === 'ArrowLeft') prevPage();
