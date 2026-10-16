@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de" data-zeit="nacht">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; frame-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Komma ermittelt – Sprachdetektei: Lernspiele zu Wortarten, Kasus, Tempus und Satzgliedern sowie Puzzles und Quizze mit Aktenzeichen.">
+  <title>Komma ermittelt – Sprachdetektei</title>
+  <link rel="icon" href="assets/bilder/komma.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/css/detektei.css">
+  <script src="assets/js/tageszeit.js"></script>
+</head>
+<body>
+<div class="seite" id="seite">
+  <div class="inhalt">
+
+    <!-- Kopfzeile: Logo, Titel, Ton, Vollbild, Menü für Lehrkräfte -->
+    <header class="kopf">
+      <div class="marke">
+        <span class="marke-bild" aria-hidden="true">
+          <svg width="40" height="40" viewBox="0 0 10 10" shape-rendering="crispEdges" aria-hidden="true">
+            <path fill="#E8A35C" d="M0 0h1v1h-1zM9 0h1v1h-1zM0 1h2v1h-2zM8 1h2v1h-2zM0 2h1v1h-1zM2 2h1v1h-1zM7 2h1v1h-1zM9 2h1v1h-1zM0 3h10v1h-10zM0 4h10v1h-10zM0 5h2v1h-2zM4 5h2v1h-2zM8 5h2v1h-2zM0 6h2v1h-2zM3 6h3v1h-3zM7 6h3v1h-3zM0 7h4v1h-4zM6 7h4v1h-4zM1 8h8v1h-8zM2 9h6v1h-6z"></path>
+            <path fill="#C47A3A" d="M4 3h2v1h-2zM0 4h1v1h-1zM9 4h1v1h-1z"></path>
+            <path fill="#F4A6B8" d="M1 2h1v1h-1zM8 2h1v1h-1zM4 7h2v1h-2z"></path>
+            <path fill="#6CC07A" d="M2 5h2v1h-2zM6 5h2v1h-2zM2 6h1v1h-1zM6 6h1v1h-1z"></path>
+            <path fill="#2A2138" d="M3 6h1v1h-1zM7 6h1v1h-1z"></path>
+          </svg>
+        </span>
+        <div>
+          <h1 class="marke-titel pix">Komma ermittelt</h1>
+          <p class="marke-unter pix">Sprachdetektei</p>
+        </div>
+      </div>
+      <nav class="kopf-werkzeuge" aria-label="Einstellungen und Lehrkräfte">
+        <button class="knopf" type="button" id="ton-knopf" aria-pressed="false">
+          <svg id="ton-an-bild" hidden width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"></path><path d="M16.5 9.5a3.5 3.5 0 0 1 0 5M19 7a7 7 0 0 1 0 10"></path></svg>
+          <svg id="ton-aus-bild" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"></path><path d="M17 9l4 6M21 9l-4 6"></path></svg>
+          <span id="ton-text">Ton aus</span>
+        </button>
+        <button class="knopf" type="button" id="vollbild-knopf">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path></svg>
+          <span>Vollbild</span>
+        </button>
+        <details class="lehrkraefte" id="lehrkraefte">
+          <summary class="knopf knopf-leise">
+            <span>Für Lehrkräfte</span>
+            <svg class="pfeil" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M5 9l7 7 7-7"></path></svg>
+          </summary>
+          <ul class="menue">
+            <li>
+              <a href="Programme/Der-Puzzle-Generator.html" data-route="werkzeug/puzzle-generator" data-titel="Puzzle-Generator">
+                <span class="menue-bild menue-bild-puzzle" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2A2138" stroke-width="2.5" stroke-linejoin="miter" stroke-linecap="square"><path d="M4 7h4.5a2.5 2.5 0 1 1 5 0H18v4.5a2.5 2.5 0 1 1 0 5V20H4z"></path></svg>
+                </span>
+                <span>
+                  <span class="menue-titel">Puzzle-Generator</span>
+                  <span class="menue-text">Fragen oben, Bildteile mit Antworten unten – auf Papier oder digital.</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="Programme/Der-Quiz-Generator.html" data-route="werkzeug/quiz-generator" data-titel="Quiz-Generator">
+                <span class="menue-bild menue-bild-quiz" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2A2138" stroke-width="2.5" stroke-linecap="square"><path d="M4 4h16v12h-9l-5 4v-4H4z"></path><path d="M9.5 8.5a2.5 2.5 0 1 1 3.5 2.3c-.7.3-1 .8-1 1.5"></path><path d="M12 14.5v.5"></path></svg>
+                </span>
+                <span>
+                  <span class="menue-titel">Quiz-Generator</span>
+                  <span class="menue-text">Fragen mit Antwortkacheln, Countdown und Chiptune-Musik – allein oder als Klassen-Duell.</span>
+                </span>
+              </a>
+            </li>
+            <li>
+              <a href="Programme/Der-Quiz-Player.html#pruefen" data-route="werkzeug/code-liste" data-titel="Code-Liste prüfen">
+                <span class="menue-bild menue-bild-liste" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#2A2138" stroke-width="2.5" stroke-linecap="square"><path d="M10 6h10M10 12h10M10 18h10"></path><path d="M3 6l1.5 1.5L7 4.5M3 12l1.5 1.5L7 10.5M3 18l1.5 1.5L7 16.5"></path></svg>
+                </span>
+                <span>
+                  <span class="menue-titel">Code-Liste prüfen</span>
+                  <span class="menue-text">Zeigt alle Aktenzeichen aus liste.js und prüft, ob die Dateien vorhanden sind.</span>
+                </span>
+              </a>
+            </li>
+          </ul>
+        </details>
+      </nav>
+    </header>
+
+    <main>
+      <!-- Pinnwand: fünf Fallakten an der Leine; ein Klick öffnet das Spiel über der Startseite -->
+      <section class="pinnwand" aria-labelledby="faelle-titel">
+        <div class="pinnwand-kopf">
+          <h2 class="pinnwand-titel pix" id="faelle-titel">Offene Fälle</h2>
+          <p class="pinnwand-hinweis">Tippe auf einen Fall – oder gib unten ein Aktenzeichen ein.</p>
+        </div>
+        <div class="leine-bereich">
+          <svg class="leine" aria-hidden="true" viewBox="0 0 1000 26" preserveAspectRatio="none">
+            <path d="M0 6 Q50 18 100 8 Q200 24 300 8 Q400 24 500 8 Q600 24 700 8 Q800 24 900 8 Q950 18 1000 6" fill="none" stroke="#A83A48" stroke-width="5" vector-effect="non-scaling-stroke"></path>
+            <path d="M0 6 Q50 18 100 8 Q200 24 300 8 Q400 24 500 8 Q600 24 700 8 Q800 24 900 8 Q950 18 1000 6" fill="none" stroke="#D94F5C" stroke-width="3" vector-effect="non-scaling-stroke"></path>
+          </svg>
+          <span class="leine-ende leine-ende-links" aria-hidden="true"></span>
+          <span class="leine-ende leine-ende-rechts" aria-hidden="true"></span>
+
+          <ul class="akten">
+            <li>
+              <a class="akte" href="Programme/Das-Wortarten-Labor.html" data-route="fall/wortarten-labor" data-titel="Das Wortarten-Labor">
+                <svg class="klammer" aria-hidden="true" width="12" height="30" viewBox="0 0 4 10" shape-rendering="crispEdges"><path fill="#8A5A3C" d="M1 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM0 3h1v1h-1zM3 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM0 5h1v1h-1zM3 5h1v1h-1zM0 6h1v1h-1zM3 6h1v1h-1zM1 9h2v1h-2z"></path><path fill="#C99470" d="M1 1h2v1h-2zM1 2h2v1h-2zM1 3h2v1h-2zM1 5h2v1h-2zM1 6h2v1h-2zM1 7h2v1h-2zM1 8h2v1h-2z"></path><path fill="#C9C3D9" d="M1 4h2v1h-2z"></path></svg>
+                <span class="stempel pix" aria-hidden="true">FALL 1</span>
+                <span class="akte-bild akte-bild-labor" aria-hidden="true">
+                  <svg width="64" height="64" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="#2A2138" d="M5 1h6v1h-6zM6 2h1v1h-1zM9 2h1v1h-1zM6 3h1v1h-1zM9 3h1v1h-1zM6 4h1v1h-1zM9 4h1v1h-1zM6 5h1v1h-1zM9 5h1v1h-1zM5 6h1v1h-1zM10 6h1v1h-1zM4 7h1v1h-1zM11 7h1v1h-1zM4 8h1v1h-1zM11 8h1v1h-1zM3 9h1v1h-1zM12 9h1v1h-1zM3 10h1v1h-1zM12 10h1v1h-1zM2 11h1v1h-1zM13 11h1v1h-1zM2 12h1v1h-1zM13 12h1v1h-1zM1 13h1v1h-1zM14 13h1v1h-1zM1 14h14v1h-14z"></path><path fill="#F7FBFF" d="M7 2h2v1h-2zM7 3h1v1h-1zM7 4h2v1h-2zM8 5h1v1h-1zM6 6h4v1h-4zM5 7h4v1h-4zM10 7h1v1h-1zM5 8h6v1h-6z"></path><path fill="#BFEBD8" d="M8 3h1v1h-1zM7 5h1v1h-1zM9 7h1v1h-1zM4 9h8v1h-8zM7 10h1v1h-1zM10 11h1v1h-1zM5 12h1v1h-1z"></path><path fill="#5FAF92" d="M4 10h3v1h-3zM8 10h4v1h-4zM3 11h7v1h-7zM11 11h2v1h-2zM3 12h2v1h-2zM6 12h7v1h-7zM2 13h12v1h-12z"></path></svg>
+                </span>
+                <span class="akte-titel pix">Das Wortarten-Labor</span>
+                <span class="akte-text">Wortarten untersuchen, bestimmen und einordnen</span>
+              </a>
+            </li>
+            <li>
+              <a class="akte" href="Programme/Die-Wortwurfbude.html" data-route="fall/wortwurfbude" data-titel="Die Wortwurfbude">
+                <svg class="klammer" aria-hidden="true" width="12" height="30" viewBox="0 0 4 10" shape-rendering="crispEdges"><path fill="#8A5A3C" d="M1 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM0 3h1v1h-1zM3 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM0 5h1v1h-1zM3 5h1v1h-1zM0 6h1v1h-1zM3 6h1v1h-1zM1 9h2v1h-2z"></path><path fill="#C99470" d="M1 1h2v1h-2zM1 2h2v1h-2zM1 3h2v1h-2zM1 5h2v1h-2zM1 6h2v1h-2zM1 7h2v1h-2zM1 8h2v1h-2z"></path><path fill="#C9C3D9" d="M1 4h2v1h-2z"></path></svg>
+                <span class="stempel pix" aria-hidden="true">FALL 2</span>
+                <span class="akte-bild akte-bild-bude" aria-hidden="true">
+                  <svg width="64" height="64" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="#5FAF92" d="M11 0h2v1h-2zM10 1h1v1h-1zM12 1h2v1h-2zM10 2h4v1h-4zM11 3h2v1h-2z"></path><path fill="#8C7FB0" d="M7 1h2v1h-2zM6 2h2v1h-2z"></path><path fill="#FFFFFF" d="M11 1h1v1h-1z"></path><path fill="#2A2138" d="M6 6h4v1h-4zM6 7h1v1h-1zM9 7h1v1h-1zM6 8h1v1h-1zM9 8h1v1h-1zM6 9h1v1h-1zM9 9h1v1h-1zM4 10h8v1h-8zM4 11h1v1h-1zM7 11h2v1h-2zM11 11h1v1h-1zM4 12h1v1h-1zM7 12h2v1h-2zM11 12h1v1h-1zM4 13h1v1h-1zM7 13h2v1h-2zM11 13h1v1h-1z"></path><path fill="#F7E08A" d="M7 7h2v1h-2zM7 9h2v1h-2z"></path><path fill="#D9BF5E" d="M7 8h2v1h-2z"></path><path fill="#F4A6B8" d="M5 11h2v1h-2zM5 13h2v1h-2z"></path><path fill="#A9D3F2" d="M9 11h2v1h-2zM9 13h2v1h-2z"></path><path fill="#D9849A" d="M5 12h2v1h-2z"></path><path fill="#7FB2DA" d="M9 12h2v1h-2z"></path><path fill="#A87452" d="M3 14h10v1h-10zM3 15h1v1h-1zM12 15h1v1h-1z"></path></svg>
+                </span>
+                <span class="akte-titel pix">Die Wortwurfbude</span>
+                <span class="akte-text">Treffsicher Wortarten und grammatische Formen bestimmen</span>
+              </a>
+            </li>
+            <li>
+              <a class="akte" href="Programme/Der-Kasus-Teich.html" data-route="fall/kasus-teich" data-titel="Der Kasus-Teich">
+                <svg class="klammer" aria-hidden="true" width="12" height="30" viewBox="0 0 4 10" shape-rendering="crispEdges"><path fill="#8A5A3C" d="M1 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM0 3h1v1h-1zM3 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM0 5h1v1h-1zM3 5h1v1h-1zM0 6h1v1h-1zM3 6h1v1h-1zM1 9h2v1h-2z"></path><path fill="#C99470" d="M1 1h2v1h-2zM1 2h2v1h-2zM1 3h2v1h-2zM1 5h2v1h-2zM1 6h2v1h-2zM1 7h2v1h-2zM1 8h2v1h-2z"></path><path fill="#C9C3D9" d="M1 4h2v1h-2z"></path></svg>
+                <span class="stempel pix" aria-hidden="true">FALL 3</span>
+                <span class="akte-bild akte-bild-teich" aria-hidden="true">
+                  <svg width="64" height="64" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="#E0B030" d="M6 1h1v1h-1zM8 1h1v1h-1zM10 1h1v1h-1zM6 2h5v1h-5z"></path><path fill="#8FD3B6" d="M3 2h2v1h-2zM12 2h2v1h-2zM2 3h1v1h-1zM5 3h7v1h-7zM14 3h1v1h-1zM2 4h13v1h-13zM2 5h1v1h-1zM14 5h1v1h-1zM3 6h11v1h-11zM2 7h2v1h-2zM13 7h2v1h-2zM1 8h3v1h-3zM13 8h3v1h-3zM2 9h3v1h-3zM12 9h3v1h-3zM0 10h2v1h-2zM5 10h6v1h-6zM14 10h2v1h-2z"></path><path fill="#FFFFFF" d="M3 3h1v1h-1zM12 3h1v1h-1z"></path><path fill="#2A2138" d="M4 3h1v1h-1zM13 3h1v1h-1z"></path><path fill="#4F9C7F" d="M3 5h11v1h-11zM1 9h1v1h-1zM15 9h1v1h-1zM2 11h12v1h-12zM1 12h14v1h-14zM1 13h6v1h-6zM9 13h6v1h-6z"></path><path fill="#DDF5E9" d="M4 7h9v1h-9zM4 8h9v1h-9zM5 9h7v1h-7z"></path><path fill="#7FB2DA" d="M0 14h16v1h-16zM1 15h2v1h-2zM4 15h2v1h-2zM7 15h2v1h-2zM10 15h2v1h-2zM13 15h2v1h-2z"></path></svg>
+                </span>
+                <span class="akte-titel pix">Der Kasus-Teich</span>
+                <span class="akte-text">Die 4 Fälle (Nominativ, Genitiv, Dativ, Akkusativ) bestimmen</span>
+              </a>
+            </li>
+            <li>
+              <a class="akte" href="Programme/Der-Zeitfaden.html" data-route="fall/zeitfaden" data-titel="Der Zeitfaden">
+                <svg class="klammer" aria-hidden="true" width="12" height="30" viewBox="0 0 4 10" shape-rendering="crispEdges"><path fill="#8A5A3C" d="M1 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM0 3h1v1h-1zM3 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM0 5h1v1h-1zM3 5h1v1h-1zM0 6h1v1h-1zM3 6h1v1h-1zM1 9h2v1h-2z"></path><path fill="#C99470" d="M1 1h2v1h-2zM1 2h2v1h-2zM1 3h2v1h-2zM1 5h2v1h-2zM1 6h2v1h-2zM1 7h2v1h-2zM1 8h2v1h-2z"></path><path fill="#C9C3D9" d="M1 4h2v1h-2z"></path></svg>
+                <span class="stempel pix" aria-hidden="true">FALL 4</span>
+                <span class="akte-bild akte-bild-faden" aria-hidden="true">
+                  <svg width="64" height="64" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="#8A5A3C" d="M2 1h12v1h-12zM2 11h12v1h-12z"></path><path fill="#C99470" d="M3 2h10v1h-10zM3 10h10v1h-10z"></path><path fill="#D94F5C" d="M4 3h8v1h-8zM5 4h6v1h-6zM4 5h8v1h-8zM5 6h6v1h-6zM4 7h8v1h-8zM5 8h6v1h-6zM4 9h9v1h-9zM13 10h1v1h-1zM14 11h1v1h-1zM14 12h1v1h-1zM13 13h1v1h-1zM10 14h3v1h-3zM8 15h2v1h-2z"></path><path fill="#A83A48" d="M4 4h1v1h-1zM11 4h1v1h-1zM4 6h1v1h-1zM11 6h1v1h-1zM4 8h1v1h-1zM11 8h1v1h-1z"></path></svg>
+                </span>
+                <span class="akte-titel pix">Der Zeitfaden</span>
+                <span class="akte-text">Die Tempusformen auf dem Zeitstrahl ordnen und festigen</span>
+              </a>
+            </li>
+            <li>
+              <a class="akte" href="Programme/Das-Raetsel-von-Abteil-7.html" data-route="fall/abteil-7" data-titel="Das Rätsel von Abteil 7">
+                <svg class="klammer" aria-hidden="true" width="12" height="30" viewBox="0 0 4 10" shape-rendering="crispEdges"><path fill="#8A5A3C" d="M1 0h2v1h-2zM0 1h1v1h-1zM3 1h1v1h-1zM0 2h1v1h-1zM3 2h1v1h-1zM0 3h1v1h-1zM3 3h1v1h-1zM0 4h1v1h-1zM3 4h1v1h-1zM0 5h1v1h-1zM3 5h1v1h-1zM0 6h1v1h-1zM3 6h1v1h-1zM1 9h2v1h-2z"></path><path fill="#C99470" d="M1 1h2v1h-2zM1 2h2v1h-2zM1 3h2v1h-2zM1 5h2v1h-2zM1 6h2v1h-2zM1 7h2v1h-2zM1 8h2v1h-2z"></path><path fill="#C9C3D9" d="M1 4h2v1h-2z"></path></svg>
+                <span class="stempel pix" aria-hidden="true">FALL 5</span>
+                <span class="akte-bild akte-bild-ticket" aria-hidden="true">
+                  <svg width="64" height="64" viewBox="0 0 16 16" shape-rendering="crispEdges"><path fill="#F7E08A" d="M1 4h14v1h-14zM1 5h1v1h-1zM7 5h8v1h-8zM1 6h5v1h-5zM7 6h2v1h-2zM13 6h2v1h-2zM1 7h4v1h-4zM6 7h9v1h-9zM2 8h2v1h-2zM5 8h4v1h-4zM12 8h1v1h-1zM14 8h1v1h-1zM2 9h2v1h-2zM5 9h10v1h-10zM1 10h3v1h-3zM5 10h4v1h-4zM13 10h2v1h-2zM1 11h14v1h-14z"></path><path fill="#2A2138" d="M2 5h5v1h-5zM6 6h1v1h-1zM5 7h1v1h-1zM4 8h1v1h-1zM4 9h1v1h-1zM4 10h1v1h-1z"></path><path fill="#8C7FB0" d="M9 6h4v1h-4zM9 8h3v1h-3zM9 10h4v1h-4z"></path><path fill="#D9BF5E" d="M1 12h14v1h-14z"></path></svg>
+                </span>
+                <span class="akte-titel pix">Das Rätsel von Abteil 7</span>
+                <span class="akte-text">Satzglied-Krimi im Nachtexpress Aurora lösen</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </main>
+
+    <!-- Büro-Szene: Fenster, Garderobe, Schreibtisch mit Komma und Aktenzeichen-Eingabe -->
+    <section class="szene" aria-label="Idas Büro">
+      <div class="raum">
+        <div class="fenster">
+          <div class="fenster-rahmen">
+            <svg width="360" height="228" viewBox="0 0 120 76" shape-rendering="crispEdges" role="img" aria-label="Blick aus dem Fenster auf eine Eisenbahnbrücke">
+              <rect class="f-himmel" x="0" y="0" width="120" height="76"></rect>
+              <g class="sterne" fill="#F7E08A">
+                <rect x="8" y="8" width="1" height="1"></rect>
+                <rect x="20" y="14" width="1" height="1"></rect>
+                <rect x="33" y="6" width="3" height="1"></rect>
+                <rect x="34" y="5" width="1" height="3"></rect>
+                <rect x="48" y="12" width="1" height="1"></rect>
+                <rect x="62" y="4" width="1" height="1"></rect>
+                <rect x="73" y="16" width="3" height="1"></rect>
+                <rect x="74" y="15" width="1" height="3"></rect>
+                <rect x="84" y="24" width="1" height="1"></rect>
+                <rect x="110" y="16" width="1" height="1"></rect>
+                <rect x="104" y="28" width="1" height="1"></rect>
+                <rect x="14" y="26" width="1" height="1"></rect>
+                <rect x="40" y="24" width="1" height="1"></rect>
+                <rect x="66" y="28" width="1" height="1"></rect>
+              </g>
+              <g transform="translate(92 6)">
+                <path class="f-mond" d="M2 0h3v1h-3zM1 1h5v1h-5zM0 2h2v1h-2zM3 2h4v1h-4zM0 3h7v1h-7zM0 4h4v1h-4zM5 4h2v1h-2zM1 5h5v1h-5zM2 6h3v1h-3z"></path>
+                <path class="f-mond-schatten" d="M2 2h1v1h-1zM4 4h1v1h-1z"></path>
+              </g>
+              <path class="f-huegel-hinten" d="M0 60H14V58H30V56H44V58H60V60H72V57H90V55H104V57H120V76H0Z"></path>
+              <g class="f-bruecke">
+                <rect x="0" y="50" width="120" height="3"></rect>
+                <rect x="6" y="53" width="4" height="15"></rect>
+                <rect x="26" y="53" width="4" height="15"></rect>
+                <rect x="46" y="53" width="4" height="15"></rect>
+                <rect x="66" y="53" width="4" height="15"></rect>
+                <rect x="86" y="53" width="4" height="15"></rect>
+                <rect x="106" y="53" width="4" height="15"></rect>
+                <rect x="4" y="53" width="2" height="1"></rect>
+                <rect x="10" y="53" width="2" height="1"></rect>
+                <rect x="24" y="53" width="2" height="1"></rect>
+                <rect x="30" y="53" width="2" height="1"></rect>
+                <rect x="44" y="53" width="2" height="1"></rect>
+                <rect x="50" y="53" width="2" height="1"></rect>
+                <rect x="64" y="53" width="2" height="1"></rect>
+                <rect x="70" y="53" width="2" height="1"></rect>
+                <rect x="84" y="53" width="2" height="1"></rect>
+                <rect x="90" y="53" width="2" height="1"></rect>
+                <rect x="104" y="53" width="2" height="1"></rect>
+                <rect x="110" y="53" width="2" height="1"></rect>
+              </g>
+              <rect class="f-bruecke-dunkel" x="0" y="49" width="120" height="1"></rect>
+              <rect class="f-bruecke-dunkel" x="0" y="52" width="120" height="1"></rect>
+              <g class="f-haus">
+                <rect x="12" y="63" width="8" height="5"></rect>
+                <rect x="13" y="62" width="6" height="1"></rect>
+                <rect x="14" y="61" width="4" height="1"></rect>
+                <rect x="52" y="63" width="7" height="5"></rect>
+                <rect x="53" y="62" width="5" height="1"></rect>
+                <rect x="54" y="61" width="3" height="1"></rect>
+                <rect x="97" y="61" width="9" height="5"></rect>
+                <rect x="98" y="60" width="7" height="1"></rect>
+                <rect x="99" y="59" width="5" height="1"></rect>
+              </g>
+              <g class="f-haus-fenster">
+                <rect x="15" y="64" width="2" height="2"></rect>
+                <rect x="54" y="64" width="2" height="2"></rect>
+                <rect x="99" y="62" width="2" height="2"></rect>
+                <rect x="103" y="62" width="2" height="2"></rect>
+              </g>
+              <path class="f-huegel-vorne" d="M0 68H20V67H50V68H80V66H120V76H0Z"></path>
+              <!-- Zug: fährt in Pixelschritten von links nach rechts durchs Fenster -->
+              <g class="zug">
+                <g transform="translate(0 42)">
+                  <path fill="#2A2138" d="M34 0h2v1h-2zM34 1h2v1h-2zM12 4h1v1h-1zM24 4h1v1h-1zM2 6h2v1h-2zM9 6h2v1h-2zM13 6h2v1h-2zM20 6h2v1h-2zM25 6h2v1h-2zM29 6h2v1h-2zM33 6h2v1h-2z"></path>
+                  <path fill="#D9849A" d="M1 1h11v1h-11zM13 1h11v1h-11zM1 5h11v1h-11zM13 5h11v1h-11z"></path>
+                  <path fill="#C3B4F0" d="M25 1h7v1h-7zM25 2h1v1h-1zM28 2h10v1h-10zM25 3h1v1h-1zM28 3h11v1h-11zM25 4h15v1h-15z"></path>
+                  <path fill="#F4A6B8" d="M1 2h1v1h-1zM4 2h1v1h-1zM7 2h1v1h-1zM10 2h2v1h-2zM13 2h1v1h-1zM16 2h1v1h-1zM19 2h1v1h-1zM22 2h2v1h-2zM1 3h1v1h-1zM4 3h1v1h-1zM7 3h1v1h-1zM10 3h2v1h-2zM13 3h1v1h-1zM16 3h1v1h-1zM19 3h1v1h-1zM22 3h2v1h-2zM1 4h11v1h-11zM13 4h11v1h-11z"></path>
+                  <path class="f-zug-fenster" d="M2 2h2v1h-2zM5 2h2v1h-2zM8 2h2v1h-2zM14 2h2v1h-2zM17 2h2v1h-2zM20 2h2v1h-2zM26 2h2v1h-2zM2 3h2v1h-2zM5 3h2v1h-2zM8 3h2v1h-2zM14 3h2v1h-2zM17 3h2v1h-2zM20 3h2v1h-2zM26 3h2v1h-2z"></path>
+                  <path fill="#8C7FB0" d="M25 5h15v1h-15z"></path>
+                </g>
+              </g>
+              <!-- Regen (nur nachts sichtbar): zwei gleiche Tropfenreihen übereinander, die Gruppe rutscht endlos nach unten -->
+              <g class="regen-schicht" fill="#DCE9FF">
+                <g class="regen">
+                  <path d="M4 6h1v3h-1zM14 22h1v3h-1zM9 48h1v3h-1zM22 12h1v3h-1zM27 36h1v3h-1zM34 60h1v3h-1zM40 4h1v3h-1zM46 26h1v3h-1zM51 52h1v3h-1zM57 16h1v3h-1zM63 42h1v3h-1zM68 66h1v3h-1zM74 8h1v3h-1zM80 30h1v3h-1zM86 56h1v3h-1zM92 18h1v3h-1zM97 44h1v3h-1zM103 2h1v3h-1zM108 28h1v3h-1zM113 58h1v3h-1zM117 14h1v3h-1zM19 66h1v3h-1zM88 70h1v3h-1z"></path>
+                  <path transform="translate(0 -76)" d="M4 6h1v3h-1zM14 22h1v3h-1zM9 48h1v3h-1zM22 12h1v3h-1zM27 36h1v3h-1zM34 60h1v3h-1zM40 4h1v3h-1zM46 26h1v3h-1zM51 52h1v3h-1zM57 16h1v3h-1zM63 42h1v3h-1zM68 66h1v3h-1zM74 8h1v3h-1zM80 30h1v3h-1zM86 56h1v3h-1zM92 18h1v3h-1zM97 44h1v3h-1zM103 2h1v3h-1zM108 28h1v3h-1zM113 58h1v3h-1zM117 14h1v3h-1zM19 66h1v3h-1zM88 70h1v3h-1z"></path>
+                </g>
+              </g>
+              <rect x="59" y="0" width="2" height="76" fill="#F2E3C8"></rect>
+              <rect x="0" y="37" width="120" height="2" fill="#F2E3C8"></rect>
+            </svg>
+          </div>
+          <div class="fensterbank"></div>
+          <p class="notiz pix">
+            <span class="notiz-pin" aria-hidden="true"></span>
+            <span class="notiz-zeile"><span class="nur-nacht">Bin im Nachtzug.</span><span class="nur-tag">Bin im Zug.</span></span>
+            <span class="notiz-zeile">Komma hält Wache.</span>
+            <span class="notiz-zeile">– I.</span>
+          </p>
+        </div>
+
+        <svg class="garderobe" width="96" height="208" viewBox="0 0 24 52" shape-rendering="crispEdges" role="img" aria-label="Garderobe mit Idas Hut und Mantel">
+          <rect x="11" y="6" width="2" height="42" fill="#A87452"></rect>
+          <rect x="11" y="6" width="1" height="42" fill="#C99470"></rect>
+          <rect x="10" y="3" width="4" height="3" fill="#C99470"></rect>
+          <rect x="10" y="5" width="4" height="1" fill="#A87452"></rect>
+          <rect x="7" y="8" width="4" height="1" fill="#8A5A3C"></rect>
+          <rect x="7" y="7" width="1" height="1" fill="#8A5A3C"></rect>
+          <rect x="13" y="8" width="4" height="1" fill="#8A5A3C"></rect>
+          <rect x="16" y="7" width="1" height="1" fill="#8A5A3C"></rect>
+          <rect x="7" y="48" width="10" height="2" fill="#A87452"></rect>
+          <rect x="5" y="50" width="14" height="2" fill="#8A5A3C"></rect>
+          <g transform="translate(1 4)">
+            <path fill="#6B5A8E" d="M3 0h4v1h-4zM2 1h6v1h-6zM0 3h10v1h-10z"></path>
+            <path fill="#F4A6B8" d="M2 2h6v1h-6z"></path>
+          </g>
+          <g transform="translate(12 8)">
+            <path fill="#B8916A" d="M3 0h1v1h-1zM6 0h1v1h-1zM3 1h1v1h-1zM6 1h1v1h-1zM1 2h1v1h-1zM4 2h1v1h-1zM6 2h1v1h-1zM9 2h1v1h-1zM0 3h1v1h-1zM5 3h1v1h-1zM9 3h1v1h-1zM0 4h1v1h-1zM5 4h1v1h-1zM9 4h1v1h-1zM0 5h1v1h-1zM9 5h1v1h-1zM0 6h1v1h-1zM5 6h1v1h-1zM9 6h1v1h-1zM0 7h1v1h-1zM5 7h1v1h-1zM9 7h1v1h-1zM0 8h1v1h-1zM9 8h1v1h-1zM0 9h1v1h-1zM5 9h1v1h-1zM9 9h1v1h-1zM0 11h1v1h-1zM5 11h1v1h-1zM9 11h1v1h-1zM0 12h1v1h-1zM5 12h1v1h-1zM9 12h1v1h-1zM0 13h1v1h-1zM5 13h1v1h-1zM9 13h1v1h-1zM5 14h1v1h-1zM5 15h1v1h-1zM5 16h1v1h-1zM5 17h1v1h-1zM1 18h8v1h-8z"></path>
+            <path fill="#E3C49A" d="M4 0h2v1h-2zM2 1h1v1h-1zM4 1h2v1h-2zM7 1h1v1h-1zM2 2h2v1h-2zM5 2h1v1h-1zM7 2h2v1h-2zM1 3h4v1h-4zM6 3h3v1h-3zM1 4h4v1h-4zM6 4h3v1h-3zM1 5h4v1h-4zM6 5h3v1h-3zM1 6h4v1h-4zM6 6h3v1h-3zM1 7h4v1h-4zM6 7h3v1h-3zM1 8h4v1h-4zM6 8h3v1h-3zM1 9h4v1h-4zM6 9h3v1h-3zM1 11h4v1h-4zM6 11h3v1h-3zM1 12h4v1h-4zM6 12h3v1h-3zM1 13h4v1h-4zM6 13h3v1h-3zM1 14h4v1h-4zM6 14h3v1h-3zM1 15h4v1h-4zM6 15h3v1h-3zM1 16h4v1h-4zM6 16h3v1h-3zM1 17h4v1h-4zM6 17h3v1h-3z"></path>
+            <path fill="#F7E08A" d="M5 5h1v1h-1zM5 8h1v1h-1zM5 10h1v1h-1z"></path>
+            <path fill="#A87452" d="M0 10h5v1h-5zM6 10h4v1h-4z"></path>
+          </g>
+        </svg>
+
+        <!-- Schreibtisch: der unsichtbare Knopf über Komma weckt sie -->
+        <div class="tisch" id="tisch">
+          <svg width="480" height="300" viewBox="0 0 96 60" shape-rendering="crispEdges" aria-hidden="true">
+            <path class="schein" d="M14 25H20L38 44H-4Z" fill="#F7E08A"></path>
+            <g transform="translate(10 20)">
+              <path fill="#BFEBD8" d="M5 0h4v1h-4zM4 1h1v1h-1zM9 1h1v1h-1z"></path>
+              <path fill="#8FD3B6" d="M5 1h4v1h-4zM3 2h8v1h-8zM2 3h10v1h-10z"></path>
+              <path fill="#5FAF92" d="M1 4h12v1h-12z"></path>
+              <path class="f-birne" d="M4 5h6v1h-6z"></path>
+              <path fill="#B8903C" d="M6 6h2v15h-2zM2 23h10v1h-10z"></path>
+              <path fill="#E0B860" d="M4 21h6v1h-6zM3 22h8v1h-8z"></path>
+            </g>
+            <!-- Teetasse: zwei Dampffahnen steigen versetzt auf -->
+            <g transform="translate(26 34)">
+              <path class="f-dampf dampf" d="M3 0h1v1h-1zM4 1h1v1h-1zM3 2h1v1h-1z"></path>
+              <path class="f-dampf dampf dampf-spaet" d="M6 0h1v1h-1zM7 1h1v1h-1zM6 2h1v1h-1z"></path>
+              <path fill="#FFF4DE" d="M1 4h7v1h-7zM1 5h1v1h-1zM7 5h1v1h-1zM1 6h7v1h-7zM1 7h7v1h-7zM2 8h5v1h-5z"></path>
+              <path fill="#F4A6B8" d="M2 5h5v1h-5z"></path>
+              <path fill="#D9C6A5" d="M8 5h2v1h-2zM9 6h1v1h-1zM8 7h2v1h-2zM0 9h10v1h-10z"></path>
+            </g>
+            <rect x="42" y="39" width="38" height="4" fill="#A9D3F2"></rect>
+            <rect x="42" y="43" width="38" height="1" fill="#7FB2DA"></rect>
+            <rect x="44" y="34" width="35" height="4" fill="#F4A6B8"></rect>
+            <rect x="44" y="38" width="35" height="1" fill="#D9849A"></rect>
+            <rect x="79" y="35" width="2" height="2" fill="#FFF4DE"></rect>
+            <rect x="43" y="29" width="36" height="4" fill="#F7E08A"></rect>
+            <rect x="43" y="33" width="36" height="1" fill="#D9BF5E"></rect>
+            <rect x="72" y="27" width="6" height="2" fill="#F7E08A"></rect>
+            <rect x="46" y="31" width="10" height="1" fill="#FFF4DE"></rect>
+            <!-- Komma auf dem Aktenstapel; die Augen wechseln über die Klasse "wach" am Tisch -->
+            <g transform="translate(46 16)">
+              <path fill="#E8A35C" d="M1 0h1v1h-1zM6 0h1v1h-1zM24 0h2v1h-2zM1 1h1v1h-1zM6 1h1v1h-1zM23 1h4v1h-4zM1 2h6v1h-6zM23 2h1v1h-1zM25 2h2v1h-2zM0 3h8v1h-8zM23 3h3v1h-3zM0 4h8v1h-8zM22 4h3v1h-3zM0 5h17v1h-17zM21 5h3v1h-3zM0 6h8v1h-8zM9 6h2v1h-2zM17 6h6v1h-6zM0 7h3v1h-3zM4 7h4v1h-4zM9 7h7v1h-7zM18 7h4v1h-4zM0 8h8v1h-8zM9 8h12v1h-12zM1 9h7v1h-7zM9 9h12v1h-12zM1 10h7v1h-7zM9 10h12v1h-12zM0 11h3v1h-3zM4 11h16v1h-16zM0 12h3v1h-3zM5 12h14v1h-14z"></path>
+              <path fill="#C47A3A" d="M24 2h1v1h-1zM3 2h1v1h-1zM5 2h1v1h-1zM11 6h1v2h-1zM14 6h1v2h-1zM17 6h1v2h-1zM23 4h1v1h-1zM22 5h1v1h-1zM5 12h14v1h-14z"></path>
+              <path fill="#FFF4DE" d="M1 8h4v1h-4zM2 9h3v1h-3zM0 11h3v1h-3zM0 12h3v1h-3z"></path>
+              <path fill="#F4A6B8" d="M2 1h1v1h-1zM5 1h1v1h-1zM8 6h1v1h-1zM3 7h1v1h-1zM8 7h1v1h-1zM8 8h1v1h-1zM8 9h1v1h-1z"></path>
+              <path fill="#F7E08A" d="M8 10h1v1h-1z"></path>
+              <path class="augen-zu" fill="#7A4A2E" d="M1 5h2v1h-2zM5 5h2v1h-2z"></path>
+              <path class="augen-auf" fill="#6CC07A" d="M1 4h2v1h-2zM5 4h2v1h-2zM1 5h1v1h-1zM5 5h1v1h-1z"></path>
+              <path class="augen-auf" fill="#2A2138" d="M2 5h1v1h-1zM6 5h1v1h-1z"></path>
+            </g>
+            <g transform="translate(83 34)">
+              <path fill="#2A2138" d="M2 0h4v1h-4zM1 1h1v1h-1zM6 1h1v1h-1zM0 2h1v1h-1zM7 2h1v1h-1zM0 3h1v1h-1zM7 3h1v1h-1zM0 4h1v1h-1zM7 4h1v1h-1zM1 5h1v1h-1zM6 5h1v1h-1zM2 6h4v1h-4z"></path>
+              <path fill="#FFFFFF" d="M2 1h2v1h-2zM1 2h2v1h-2zM1 3h1v1h-1z"></path>
+              <path fill="#CFE6F8" d="M4 1h2v1h-2zM3 2h4v1h-4zM2 3h5v1h-5zM1 4h6v1h-6zM2 5h4v1h-4z"></path>
+              <path fill="#8A5A3C" d="M6 6h2v1h-2zM6 7h3v1h-3zM7 8h3v1h-3zM8 9h2v1h-2z"></path>
+            </g>
+            <rect x="0" y="44" width="96" height="3" fill="#C99470"></rect>
+            <rect x="0" y="44" width="96" height="1" fill="#DDB08A"></rect>
+            <rect x="0" y="47" width="96" height="2" fill="#A87452"></rect>
+            <rect x="2" y="49" width="92" height="11" fill="#B07C5A"></rect>
+            <rect x="2" y="49" width="2" height="11" fill="#8A5A3C"></rect>
+            <rect x="92" y="49" width="2" height="11" fill="#8A5A3C"></rect>
+            <rect x="34" y="51" width="28" height="6" fill="#8A5A3C"></rect>
+            <rect x="35" y="52" width="26" height="4" fill="#C08C68"></rect>
+            <rect x="47" y="53" width="2" height="2" fill="#F7E08A"></rect>
+          </svg>
+          <button class="komma-knopf" type="button" id="komma-knopf" aria-label="Komma wecken"></button>
+          <span class="zzz pix" id="zzz" aria-hidden="true"><span>z Z z</span></span>
+          <span class="miau pix" id="miau" aria-hidden="true" hidden>Miau!</span>
+        </div>
+      </div>
+
+      <!-- Aktenzeichen: öffnet das passende Puzzle oder Quiz aus Programme/puzzles/liste.js -->
+      <form class="akten-form" id="akten-form" novalidate>
+        <span class="form-pin" aria-hidden="true"></span>
+        <label class="pix" for="aktenzeichen">Aktenzeichen</label>
+        <p class="form-hilfe" id="az-hilfe">Fünf Zeichen – die bekommst du von deiner Lehrkraft.</p>
+        <div class="kaestchen-feld">
+          <div class="kaestchen pix" id="kaestchen" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+          <input id="aktenzeichen" name="aktenzeichen" type="text" inputmode="text" maxlength="5" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-describedby="az-hilfe az-status">
+        </div>
+        <button class="knopf knopf-gelb" type="submit">Akte öffnen</button>
+        <p class="form-status" id="az-status" aria-live="polite"></p>
+        <noscript><p class="form-status fehler">Für das Aktenzeichen braucht dein Browser JavaScript. Die Fallakten funktionieren auch ohne.</p></noscript>
+      </form>
+    </section>
+  </div>
+
+  <!-- Boden (Fußzeile) mit den Rechtsseiten -->
+  <footer class="boden">
+    <nav class="boden-innen pix" aria-label="Rechtliches">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+      <a href="lizenzen.html">Lizenzen</a>
+    </nav>
+  </footer>
+</div>
+
+<!-- Spiel-Ebene: Spiele, Generatoren und Akten öffnen sich hier über der Startseite -->
+<div class="buehne" id="buehne" hidden>
+  <div class="buehne-leiste">
+    <button class="knopf" type="button" id="buehne-zurueck">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="square" aria-hidden="true"><path d="M15 5l-7 7 7 7"></path></svg>
+      <span>Zurück<span class="knopf-text-optional"> zur Detektei</span></span>
+    </button>
+    <h2 class="buehne-titel pix" id="buehne-titel"></h2>
+    <nav class="buehne-links pix" aria-label="Rechtliches">
+      <a href="impressum.html">Impressum</a>
+      <a href="datenschutz.html">Datenschutz</a>
+    </nav>
+    <button class="knopf" type="button" id="buehne-vollbild" aria-label="Vollbild">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="square" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"></path></svg>
+    </button>
+  </div>
+  <!-- Das Spiel-Fenster (iframe) wird beim Öffnen von startseite.js eingesetzt und beim Schließen entfernt -->
+</div>
+
+<script src="assets/js/startseite.js"></script>
+<script src="Programme/puzzles/liste.js"></script>
+</body>
+</html>

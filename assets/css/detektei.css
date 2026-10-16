@@ -1,0 +1,471 @@
+/* Komma ermittelt – gemeinsame Gestaltung für Startseite, Impressum, Datenschutz und Lizenzen */
+
+/* Pixelify Sans liegt lokal in assets/fonts (SIL Open Font License 1.1, siehe lizenzen.html) */
+@font-face {
+  font-family: "Pixelify Sans";
+  src: url("../fonts/PixelifySans-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pixelify Sans";
+  src: url("../fonts/PixelifySans-SemiBold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Farben: Nacht ist der Standard; tageszeit.js setzt tagsüber data-zeit="tag" am html-Element */
+:root {
+  --dunkel: #2A2138;
+  --papier: #FFF4DE;
+  --akte: #F5DDB0;
+  --butter: #F7E08A;
+  --rot: #D94F5C;
+  --rot-dunkel: #A83A48;
+  --link-dunkel: #7A2E3A;
+  --kork: #E2B48A;
+  --holz: #A87452;
+  --holz-hell: #C99470;
+  --holz-dunkel: #8A5A3C;
+
+  --wand: #3B2F52;
+  --schrift: #FFF4DE;
+  --schrift-weich: #D9CFF5;
+  --himmel: #4B4A86;
+  --mond: #F7E08A;
+  --mond-schatten: #D9BF5E;
+  --sterne: 1;
+  --regen: 0.5;
+  --huegel-hinten: #6A5E9E;
+  --huegel-vorne: #2E2645;
+  --bruecke: #8C7FB0;
+  --bruecke-dunkel: #5E5285;
+  --haus: #2A2138;
+  --haus-fenster: #F7E08A;
+  --zug-fenster: #F7E08A;
+  --schein: 0.28;
+  --birne: #FFF6C2;
+  --dampf: #CFC4EE;
+  --boden: #5A3F33;
+  --boden-linie: #4A3229;
+  --boden-schrift: #FFF4DE;
+}
+
+html[data-zeit="tag"] {
+  --wand: #F6E3E6;
+  --schrift: #2A2138;
+  --schrift-weich: #4B3E66;
+  --himmel: #A9D3F2;
+  --mond: #FFD27A;
+  --mond-schatten: #F2B95C;
+  --sterne: 0;
+  --regen: 0;
+  --huegel-hinten: #9FD4B8;
+  --huegel-vorne: #7BBF9C;
+  --bruecke: #E7C9A9;
+  --bruecke-dunkel: #C99470;
+  --haus: #8C7FB0;
+  --haus-fenster: #FFF4DE;
+  --zug-fenster: #EAF4FF;
+  --schein: 0;
+  --birne: #EAD9BC;
+  --dampf: #8C7FB0;
+  --boden: #C99470;
+  --boden-linie: #A87452;
+  --boden-schrift: #2A2138;
+}
+
+/* Grundlagen */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background-color: var(--wand);
+  background-image: repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.045) 0 18px, rgba(255, 255, 255, 0) 18px 36px);
+  color: var(--schrift);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.45;
+}
+a { color: inherit; }
+a:hover { text-decoration-thickness: 3px; }
+[hidden] { display: none !important; }
+.pix { font-family: "Pixelify Sans", ui-monospace, monospace; }
+.nur-tag { display: none; }
+html[data-zeit="tag"] .nur-tag { display: inline; }
+html[data-zeit="tag"] .nur-nacht { display: none; }
+:focus-visible { outline: 4px dashed var(--rot); outline-offset: 4px; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+}
+
+/* Seitengerüst: Inhalt wächst, der Boden (Fußzeile) bleibt unten */
+.seite { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; }
+.inhalt {
+  width: 100%; max-width: 1440px; margin: 0 auto; padding: 0 24px;
+  display: flex; flex-direction: column; gap: 18px; flex: 1 0 auto;
+}
+
+/* Kopfzeile */
+.kopf {
+  display: flex; justify-content: space-between; align-items: center;
+  gap: 16px; flex-wrap: wrap; padding-top: 16px;
+}
+.marke { display: flex; align-items: center; gap: 16px; color: inherit; text-decoration: none; }
+.marke-bild {
+  display: flex; flex: 0 0 auto; width: 64px; height: 64px; align-items: center; justify-content: center;
+  background: var(--papier); border: 3px solid var(--dunkel); box-shadow: 4px 4px 0 var(--dunkel);
+}
+.marke-titel { display: block; margin: 0; font-size: 38px; font-weight: 600; line-height: 1; letter-spacing: 1px; }
+.marke-unter { display: block; margin: 6px 0 0; font-size: 18px; letter-spacing: 2px; color: var(--schrift-weich); }
+.kopf-werkzeuge { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+/* Knöpfe */
+.knopf {
+  min-height: 44px; padding: 8px 14px; display: inline-flex; align-items: center; gap: 8px;
+  background: var(--papier); color: var(--dunkel); border: 3px solid var(--dunkel);
+  box-shadow: 4px 4px 0 var(--dunkel);
+  font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 17px; line-height: 1.1;
+  text-decoration: none; cursor: pointer;
+}
+.knopf:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 var(--dunkel); }
+.knopf svg { flex: 0 0 auto; }
+.knopf-leise { background: transparent; color: var(--schrift); border-color: var(--schrift); box-shadow: none; }
+.knopf-leise:active { transform: none; }
+.knopf-gelb { background: var(--butter); font-weight: 600; font-size: 18px; }
+
+/* Menü „Für Lehrkräfte“ (details/summary, funktioniert auch ohne JavaScript) */
+.lehrkraefte { position: relative; }
+.lehrkraefte > summary { list-style: none; }
+.lehrkraefte > summary::-webkit-details-marker { display: none; }
+.lehrkraefte .pfeil { transition: transform 0.15s steps(2); }
+.lehrkraefte[open] .pfeil { transform: rotate(180deg); }
+.menue {
+  position: absolute; right: 0; top: calc(100% + 12px); z-index: 30;
+  width: min(380px, calc(100vw - 32px)); margin: 0; padding: 8px; list-style: none;
+  background: var(--papier); color: var(--dunkel);
+  border: 3px solid var(--dunkel); box-shadow: 6px 6px 0 var(--dunkel);
+}
+.menue a {
+  display: flex; gap: 12px; align-items: flex-start; min-height: 44px; padding: 10px;
+  color: inherit; text-decoration: none;
+}
+.menue a:hover, .menue a:focus-visible { background: #F5E6C8; }
+.menue a:focus-visible { outline-offset: -4px; }
+.menue-bild {
+  flex: 0 0 auto; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center;
+  border: 2px solid var(--dunkel);
+}
+.menue-bild-puzzle { background: #DCD2F7; }
+.menue-bild-quiz { background: #F9D7E0; }
+.menue-bild-liste { background: #CDEFE0; }
+.menue-titel { display: block; font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 18px; font-weight: 600; line-height: 1.2; }
+.menue-text { display: block; font-size: 14px; line-height: 1.35; color: #4B3E66; margin-top: 2px; }
+.menue-trenner { height: 0; margin: 6px 4px; border-top: 2px dashed #CDBB9C; }
+
+/* Pinnwand mit den Fallakten */
+.pinnwand {
+  position: relative; padding: 16px 24px 26px;
+  background-color: var(--kork);
+  background-image: radial-gradient(rgba(122, 78, 44, 0.35) 1.5px, rgba(0, 0, 0, 0) 1.6px), radial-gradient(rgba(255, 240, 210, 0.4) 1px, rgba(0, 0, 0, 0) 1.2px);
+  background-size: 14px 14px, 22px 22px; background-position: 0 0, 7px 9px;
+  border: 10px solid var(--holz); box-shadow: inset 0 0 0 3px var(--holz-dunkel), 0 8px 0 rgba(20, 14, 30, 0.3);
+}
+.pinnwand-kopf { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.pinnwand-titel {
+  margin: 0; padding: 4px 14px; font-size: 24px; font-weight: 600;
+  background: var(--papier); color: var(--dunkel); border: 3px solid var(--dunkel);
+  transform: rotate(-1deg); box-shadow: 4px 4px 0 rgba(42, 33, 56, 0.35);
+}
+.pinnwand-hinweis { margin: 0; padding: 4px 10px; font-size: 16px; background: var(--papier); color: var(--dunkel); border: 2px solid var(--dunkel); }
+.leine-bereich { position: relative; padding-top: 34px; margin-top: 4px; }
+.leine { position: absolute; left: 0; top: 10px; width: 100%; height: 26px; overflow: visible; }
+.leine-ende { position: absolute; top: 10px; width: 14px; height: 14px; background: #F4A6B8; border: 3px solid var(--dunkel); }
+.leine-ende-links { left: -8px; }
+.leine-ende-rechts { right: -8px; }
+.akten { display: flex; flex-wrap: wrap; gap: 22px; align-items: stretch; margin: 0; padding: 0; list-style: none; }
+.akten > li { flex: 1 1 200px; display: flex; }
+.akte {
+  position: relative; flex: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 10px;
+  padding: 16px 16px 18px; text-align: left; text-decoration: none;
+  background: var(--akte); color: var(--dunkel); border: 3px solid var(--dunkel);
+  box-shadow: 6px 6px 0 rgba(42, 33, 56, 0.4);
+  transition: transform 0.15s steps(3);
+}
+.akten > li:nth-child(1) .akte { transform: rotate(-1.2deg); }
+.akten > li:nth-child(2) .akte { transform: rotate(0.8deg); }
+.akten > li:nth-child(3) .akte { transform: rotate(-0.6deg); }
+.akten > li:nth-child(4) .akte { transform: rotate(1.1deg); }
+.akten > li:nth-child(5) .akte { transform: rotate(-0.9deg); }
+.akten > li .akte:hover, .akten > li .akte:focus-visible { transform: translateY(-6px); }
+.klammer { position: absolute; top: -33px; left: 50%; margin-left: -6px; }
+.stempel {
+  position: absolute; top: 16px; right: 14px; padding: 0 6px;
+  border: 2px solid var(--rot-dunkel); color: var(--rot-dunkel); font-size: 14px; letter-spacing: 1px;
+}
+.akten > li:nth-child(odd) .stempel { transform: rotate(7deg); }
+.akten > li:nth-child(even) .stempel { transform: rotate(-6deg); }
+.akte-bild { display: flex; width: 76px; height: 76px; align-items: center; justify-content: center; border: 3px solid var(--dunkel); }
+.akte-bild-labor { background: #DCD2F7; }
+.akte-bild-bude { background: #FFF8EC; }
+.akte-bild-teich { background: #F9D7E0; }
+.akte-bild-faden { background: #CDEFE0; }
+.akte-bild-ticket { background: #CFE6F8; }
+.akte-titel { display: block; font-size: 22px; font-weight: 600; line-height: 1.1; }
+.akte-text { display: block; font-size: 15px; line-height: 1.35; }
+@media (max-width: 1100px) {
+  .leine, .leine-ende, .klammer { display: none; }
+}
+
+/* Büro-Szene: Raum links, Aktenzeichen-Karte rechts; margin-top:auto stellt den Raum auf den Boden */
+.szene {
+  display: grid; grid-template-columns: minmax(0, 1fr) 380px; grid-template-areas: "raum form";
+  align-items: end; column-gap: 28px; row-gap: 24px; margin-top: auto; padding-top: 6px;
+}
+.raum {
+  grid-area: raum; display: grid; grid-template-columns: 380fr 96fr 480fr;
+  grid-template-areas: "fenster garderobe tisch"; align-items: end; column-gap: 20px; min-width: 0;
+}
+.fenster { grid-area: fenster; align-self: start; position: relative; padding: 0 14px; min-width: 0; }
+.fenster-rahmen {
+  line-height: 0; background-color: var(--himmel);
+  border: 10px solid var(--holz-hell); box-shadow: inset 0 0 0 3px var(--holz), 6px 6px 0 rgba(20, 14, 30, 0.3);
+}
+.fenster-rahmen svg { display: block; width: 100%; height: auto; }
+.fensterbank { height: 12px; margin: 0 -14px; background: var(--holz-hell); box-shadow: inset 0 -4px 0 var(--holz); }
+.notiz {
+  position: absolute; right: -6px; bottom: 32px; margin: 0; width: 138px; padding: 12px 10px 8px;
+  background: var(--papier); color: var(--dunkel); border: 2px solid var(--dunkel);
+  box-shadow: 3px 3px 0 rgba(20, 14, 30, 0.35); transform: rotate(4deg); font-size: 14px; line-height: 1.25;
+}
+.notiz-zeile { display: block; }
+.notiz-pin { position: absolute; top: -8px; left: 50%; margin-left: -6px; width: 12px; height: 12px; background: #A9D3F2; border: 2px solid var(--dunkel); }
+.garderobe { grid-area: garderobe; display: block; width: 100%; max-width: 96px; height: auto; justify-self: center; }
+.tisch { grid-area: tisch; position: relative; min-width: 0; }
+.tisch > svg { display: block; width: 100%; height: auto; }
+.komma-knopf { position: absolute; left: 46%; top: 24%; width: 32%; height: 26%; padding: 0; background: transparent; border: 0; cursor: pointer; }
+.komma-knopf:focus-visible { outline-offset: 2px; }
+.zzz { position: absolute; left: 41%; top: 6%; font-size: 22px; letter-spacing: 2px; color: var(--schrift); pointer-events: none; }
+.zzz span { display: inline-block; }
+.miau {
+  position: absolute; left: 36%; top: 3%; padding: 4px 10px; pointer-events: none;
+  background: var(--papier); color: var(--dunkel); border: 3px solid var(--dunkel);
+  box-shadow: 3px 3px 0 rgba(20, 14, 30, 0.35); font-size: 18px;
+}
+.augen-auf { opacity: 0; }
+.tisch.wach .augen-auf { opacity: 1; }
+.tisch.wach .augen-zu { opacity: 0; }
+
+/* Pixelgrafik: Farben, die mit Tag und Nacht wechseln */
+.f-himmel { fill: var(--himmel); }
+.f-mond { fill: var(--mond); }
+.f-mond-schatten { fill: var(--mond-schatten); }
+.f-huegel-hinten { fill: var(--huegel-hinten); }
+.f-huegel-vorne { fill: var(--huegel-vorne); }
+.f-bruecke { fill: var(--bruecke); }
+.f-bruecke-dunkel { fill: var(--bruecke-dunkel); }
+.f-haus { fill: var(--haus); }
+.f-haus-fenster { fill: var(--haus-fenster); }
+.f-zug-fenster { fill: var(--zug-fenster); }
+.f-birne { fill: var(--birne); }
+.f-dampf { fill: var(--dampf); }
+.sterne { opacity: var(--sterne); }
+.regen-schicht { opacity: var(--regen); }
+.schein { opacity: var(--schein); }
+
+/* Aktenzeichen-Karte: ein unsichtbares Eingabefeld liegt über den fünf Anzeigekästchen */
+.akten-form {
+  grid-area: form; align-self: end; position: relative; margin-bottom: 24px;
+  display: flex; flex-direction: column; gap: 10px; padding: 20px 22px 16px;
+  background: var(--papier); color: var(--dunkel); border: 4px solid var(--dunkel); box-shadow: 8px 8px 0 var(--dunkel);
+}
+.form-pin { position: absolute; top: -10px; left: 50%; margin-left: -8px; width: 16px; height: 16px; background: #F4A6B8; border: 3px solid var(--dunkel); }
+.akten-form label { font-size: 28px; font-weight: 600; line-height: 1; }
+.akten-form p { margin: 0; }
+.form-hilfe { font-size: 16px; line-height: 1.35; }
+.kaestchen-feld { position: relative; align-self: flex-start; }
+.kaestchen { display: flex; gap: 8px; }
+.kaestchen span {
+  width: 48px; height: 58px; display: flex; align-items: center; justify-content: center;
+  background: #FFFFFF; border: 3px solid var(--dunkel); box-shadow: inset 0 -4px 0 #EAD9BC;
+  font-size: 34px; font-weight: 600;
+}
+.kaestchen span.aktiv { border-color: var(--rot); }
+.kaestchen-feld input {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+  opacity: 0; border: 0; padding: 0; font-size: 16px; cursor: text;
+}
+.form-status { min-height: 21px; font-size: 15px; }
+.form-status.fehler { color: var(--rot-dunkel); }
+
+/* Schmalere Querformate (z. B. 1024 × 768 an älteren Smartboards): fünf Akten nebeneinander, Karte schmaler */
+@media (max-width: 1180px) {
+  .szene { grid-template-columns: minmax(0, 1fr) 340px; column-gap: 20px; }
+  .akten > li { flex-basis: 150px; }
+  .akte-bild { width: 56px; height: 56px; }
+  .akte-bild svg { width: 46px; height: 46px; }
+  .akte-titel { font-size: 19px; }
+  .akte-text { font-size: 14px; }
+  .stempel { top: 12px; right: 10px; font-size: 12px; }
+  .kaestchen { gap: 6px; }
+  .kaestchen span { width: 44px; }
+}
+/* Hochformat und schmale Bildschirme: Aktenzeichen-Karte mittig über dem Raum */
+@media (max-width: 900px) {
+  .szene { grid-template-columns: minmax(0, 1fr); grid-template-areas: "form" "raum"; }
+  .akten-form { justify-self: center; width: 100%; max-width: 440px; margin-bottom: 0; }
+  .akten > li { flex-basis: 200px; }
+}
+@media (max-width: 760px) {
+  .raum {
+    grid-template-columns: 96fr 480fr; grid-template-areas: "fenster fenster" "garderobe tisch";
+    row-gap: 18px; column-gap: 10px;
+  }
+  .fenster { justify-self: center; width: 100%; max-width: 390px; }
+}
+@media (max-width: 640px) {
+  .inhalt { padding: 0 16px; }
+  .marke-titel { font-size: 32px; }
+  .lehrkraefte { flex-basis: 100%; }
+  .menue { position: static; width: 100%; margin-top: 12px; }
+  .pinnwand { padding: 14px 14px 20px; border-width: 8px; }
+}
+@media (max-width: 400px) {
+  .kaestchen { gap: 6px; }
+  .kaestchen span { width: 44px; height: 54px; font-size: 30px; }
+  .akten-form { padding: 18px 16px 14px; }
+}
+
+/* Niedrige Querformat-Bildschirme (z. B. Laptops und Smartboards mit 720 bis 864 Pixel Höhe): alles etwas kompakter,
+   damit die Startseite möglichst ohne Scrollen auskommt */
+@media (min-width: 901px) and (max-height: 899px) {
+  .inhalt { gap: 12px; }
+  .kopf { padding-top: 8px; }
+  .marke-bild { width: 52px; height: 52px; }
+  .marke-bild svg { width: 34px; height: 34px; }
+  .marke-titel { font-size: 32px; }
+  .marke-unter { margin-top: 4px; font-size: 16px; }
+  .pinnwand { padding: 10px 20px 16px; }
+  .leine-bereich { padding-top: 28px; }
+  .akte { gap: 6px; padding: 12px 14px 14px; }
+  .akte-bild { width: 56px; height: 56px; }
+  .akte-bild svg { width: 46px; height: 46px; }
+  .akte-titel { font-size: 20px; }
+  .akte-text { font-size: 14px; }
+  .stempel { top: 12px; }
+  .szene { padding-top: 0; }
+  .raum { width: 100%; max-width: 600px; justify-self: center; }
+  .akten-form { gap: 6px; padding: 14px 20px 10px; margin-bottom: 14px; }
+  .akten-form label { font-size: 24px; }
+  .form-hilfe { font-size: 15px; }
+  .kaestchen span { height: 48px; font-size: 30px; }
+  .notiz { width: 112px; bottom: 20px; padding: 10px 8px 6px; font-size: 12px; }
+  .boden-innen { padding: 4px 24px; }
+}
+/* Ohne sichtbare Leine (Akten brechen um oder sind schmal) braucht die Pinnwand oben weniger Platz */
+@media (max-width: 1100px) {
+  .leine-bereich { padding-top: 14px; }
+}
+
+/* Boden (Fußzeile) */
+.boden {
+  color: var(--boden-schrift); background-color: var(--boden);
+  background-image: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.14) 0 3px, rgba(0, 0, 0, 0) 3px 120px);
+  box-shadow: inset 0 6px 0 var(--boden-linie);
+}
+.boden-innen {
+  max-width: 1440px; margin: 0 auto; padding: 14px 24px;
+  display: flex; justify-content: flex-end; align-items: center; gap: 4px 24px; flex-wrap: wrap;
+}
+.boden a { display: inline-block; padding: 10px 2px; font-size: 17px; text-underline-offset: 4px; }
+
+/* Bewegung */
+@keyframes fahrt { from { transform: translateX(-46px); } to { transform: translateX(124px); } }
+.zug { animation: fahrt 18s steps(170) infinite; }
+@keyframes schnarch { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+.zzz span { animation: schnarch 2.4s steps(4) infinite; }
+@keyframes dampf {
+  0% { transform: translate(0, 1px); opacity: 0; }
+  30% { opacity: 0.9; }
+  60% { transform: translate(0.5px, -1px); opacity: 0.7; }
+  100% { transform: translate(0, -3px); opacity: 0; }
+}
+.dampf { animation: dampf 4s ease-in-out infinite; }
+.dampf-spaet { animation-delay: -2s; }
+/* Regen: zwei gleiche Tropfenreihen; die Strecke entspricht der Fensterhöhe, daher nahtlose Schleife */
+@keyframes regen { from { transform: translateY(0); } to { transform: translateY(76px); } }
+.regen { animation: regen 2s steps(76) infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .zug { animation: none; transform: translateX(64px); }
+  .zzz span, .regen { animation: none; }
+  .dampf { animation: none; opacity: 0.8; }
+  .akte, .lehrkraefte .pfeil { transition: none; }
+}
+
+/* Spiel-Ebene über der Startseite: Leiste oben, Spiel im iframe darunter */
+html.buehne-offen, html.buehne-offen body { overflow: hidden; }
+.buehne { position: fixed; inset: 0; z-index: 100; display: flex; flex-direction: column; background: var(--dunkel); }
+.buehne-leiste {
+  flex: 0 0 auto; display: flex; align-items: center; gap: 12px; min-height: 58px; padding: 6px 12px;
+  background: var(--dunkel); color: var(--papier); border-bottom: 3px solid #120D1A;
+}
+.buehne-leiste .knopf { min-height: 44px; padding: 6px 12px; font-size: 16px; box-shadow: 3px 3px 0 #120D1A; border-color: #120D1A; }
+.buehne-titel {
+  flex: 1 1 auto; min-width: 0; margin: 0; font-size: 20px; font-weight: 600;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.buehne-links { display: flex; gap: 16px; margin-left: auto; }
+.buehne-links a { display: inline-block; padding: 10px 2px; font-size: 15px; color: var(--papier); text-underline-offset: 4px; }
+.buehne iframe { flex: 1 1 auto; width: 100%; border: 0; background: #FFFFFF; }
+@media (max-width: 640px) {
+  .buehne-titel { display: none; }
+  .buehne-leiste { gap: 10px; padding: 6px 8px; }
+  .buehne-links { gap: 12px; }
+  .buehne-links a { font-size: 14px; }
+  .knopf-text-optional { display: none; }
+}
+
+/* Rechtsseiten: Impressum, Datenschutz, Lizenzen */
+.blatt-bereich { width: 100%; max-width: 860px; margin: 8px auto 48px; }
+.blatt {
+  position: relative; padding: 30px 34px 34px; line-height: 1.6;
+  background: var(--papier); color: var(--dunkel); border: 4px solid var(--dunkel); box-shadow: 8px 8px 0 var(--dunkel);
+}
+.blatt-pin { position: absolute; top: -10px; left: 50%; margin-left: -8px; width: 16px; height: 16px; background: #F4A6B8; border: 3px solid var(--dunkel); }
+.blatt h1 {
+  display: flex; align-items: center; gap: 12px; margin: 0 0 20px;
+  font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 34px; font-weight: 600; line-height: 1.1;
+}
+.blatt h2 { margin: 28px 0 8px; font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 22px; font-weight: 600; line-height: 1.2; }
+.blatt p { margin: 0 0 12px; }
+.blatt ul { margin: 0 0 12px; padding-left: 22px; }
+.blatt li { margin-bottom: 8px; }
+.blatt a { color: var(--link-dunkel); text-underline-offset: 3px; overflow-wrap: anywhere; }
+.blatt .klein { font-size: 15px; color: #4B3E66; }
+.kurz-erklaert {
+  display: flex; gap: 14px; align-items: flex-start; margin: 0 0 22px; padding: 14px 16px;
+  background: #FBEDB0; border: 3px solid var(--dunkel);
+}
+.kurz-erklaert svg { flex: 0 0 auto; }
+.kurz-titel { margin: 0 0 4px !important; font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 19px; font-weight: 600; }
+.lizenz-marke {
+  display: inline-block; margin: 0 0 12px; padding: 4px 12px;
+  font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 20px; font-weight: 600;
+  background: var(--dunkel); color: var(--papier);
+}
+.schriften { list-style: none; padding: 0 !important; }
+.schriften li { padding: 12px 14px; margin-bottom: 10px; background: #FFFFFF; border: 2px solid var(--dunkel); }
+.schriften strong { font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 18px; }
+.lizenztext-auf { margin-top: 8px; }
+.lizenztext-auf summary { cursor: pointer; font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 18px; min-height: 44px; display: flex; align-items: center; }
+.lizenztext {
+  margin: 8px 0 0; padding: 14px; overflow-x: auto; white-space: pre-wrap;
+  background: #FFFFFF; border: 2px solid var(--dunkel);
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; font-size: 13px; line-height: 1.5;
+}
+@media (max-width: 640px) {
+  .blatt { padding: 22px 18px 24px; }
+  .blatt h1 { font-size: 28px; }
+}
