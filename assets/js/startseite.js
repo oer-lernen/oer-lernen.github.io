@@ -1,4 +1,4 @@
-/* Komma ermittelt – Startseite: Spiel-Ebene, Aktenzeichen, Menü für Lehrkräfte, Ton, Vollbild, Komma */
+/* Komma ermittelt – Startseite: Spiel-Ebene, Aktenzeichen, Menü für Lehrkräfte, Ton, Vollbild, Komma, Lampe */
 
 /* Empfang der Code-Liste: Programme/puzzles/liste.js ruft puzzleListe(`…`) auf (wird nach dieser Datei geladen) */
 window.puzzleListe = function (text) { window.PUZZLE_LISTE_TEXT = String(text); };
@@ -147,6 +147,30 @@ document.addEventListener('DOMContentLoaded', function () {
     piep([[880, 0.08], [660, 0.16]]);
     schlafUhr = setTimeout(function () { setzeWach(false); }, 4000);
   });
+
+  /* ---------- Schreibtischlampe: Licht an = Nacht, Licht aus = Tag (tageszeit.js) ---------- */
+  var lampe = $('lampen-knopf');
+  function zeigeLampe() {
+    var nacht = document.documentElement.getAttribute('data-zeit') !== 'tag';
+    var text = nacht ? 'Licht ausschalten (Tagansicht)' : 'Licht einschalten (Nachtansicht)';
+    lampe.setAttribute('aria-label', text);
+    lampe.title = text;
+  }
+  if (typeof window.tageszeitUmschalten === 'function') {
+    lampe.addEventListener('click', function () {
+      var neu = window.tageszeitUmschalten();
+      piep(neu === 'nacht' ? [[440, 0.04], [660, 0.08]] : [[660, 0.04], [440, 0.08]]);
+    });
+    /* Die Beschriftung folgt jedem Wechsel, auch dem automatischen nach Uhrzeit */
+    if (window.MutationObserver) {
+      new MutationObserver(zeigeLampe).observe(document.documentElement, { attributes: true, attributeFilter: ['data-zeit'] });
+    } else {
+      lampe.addEventListener('click', zeigeLampe);
+    }
+    zeigeLampe();
+  } else {
+    lampe.hidden = true;
+  }
 
   /* ---------- Menü „Für Lehrkräfte“: schließt bei Klick daneben und mit Escape ---------- */
   var menue = $('lehrkraefte');

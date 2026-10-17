@@ -11,7 +11,7 @@ impressum.html        Impressum
 datenschutz.html      Hinweis zum Datenschutz
 lizenzen.html         Lizenz der Materialien und der Schriften
 assets/css/           Gestaltung für Startseite und Rechtsseiten
-assets/js/            tageszeit.js (Tag/Nacht nach Uhrzeit), startseite.js
+assets/js/            tageszeit.js (Tag/Nacht nach Uhrzeit, Lampe schaltet von Hand um), startseite.js
 assets/fonts/         Pixelify Sans mit Lizenz (OFL.txt)
 assets/bilder/        Symbol für den Browser-Tab
 Programme/            Lernspiele, Puzzle-Generator, Quiz-Generator, Quiz-Player
@@ -35,9 +35,15 @@ und für „Code-Liste prüfen“.
   (`allow="fullscreen 'none'"`); die Spiele blenden ihren Vollbild-Knopf dann aus. Einzeln geöffnet behalten sie ihn.
 - Impressum und Datenschutz öffnen sich aus der Spiel-Ebene in einem neuen Tab, damit der Spielstand erhalten bleibt.
 
+## Tag und Nacht
+
+- Die Startseite wechselt nach der Uhrzeit des Geräts (7 bis 19 Uhr Tag, sonst Nacht).
+- Ein Klick auf die Schreibtischlampe schaltet von Hand um (Licht an = Nacht, Licht aus = Tag).
+  Die Wahl gilt bis zum nächsten Neuladen; gespeichert wird nichts.
+
 ## Adressen zum Verlinken
 
 - Ein Spiel direkt öffnen: `https://oer-lernen.github.io/#fall/zeitfaden`
-  (außerdem `fall/wortarten-labor`, `fall/wortwurfbude`, `fall/kasus-teich`, `fall/abteil-7`)
+  (außerdem `fall/wortarten-labor`, `fall/wortwurfbude`, `fall/kasus-teich`, `fall/abteil-7`, `fall/faelscherwerkstatt`)
 - Eine Akte direkt öffnen: `https://oer-lernen.github.io/#akte/GRIMM`
 - Werkzeuge: `#werkzeug/puzzle-generator`, `#werkzeug/quiz-generator`, `#werkzeug/code-liste`
