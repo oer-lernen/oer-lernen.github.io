@@ -124,6 +124,10 @@ button { font: inherit; }
 .note-cat svg { display: block; }
 #noteBody { position: relative; min-width: 0; background: var(--paper); color: var(--text-dark); border: 3px solid var(--ink0); box-shadow: 4px 4px 0 var(--ink0); padding: 6px 14px 8px; max-height: 7.6em; min-height: 2.4em; overflow-y: auto; }
 #note p { margin: 0; max-width: 72ch; }
+/* Kurzer Stufenhinweis: eine schlanke Zeile statt einer großen Sprechblase */
+#note.brief { align-items: center; }
+#note.brief #noteBody { min-height: 0; padding: 2px 10px; background: transparent; color: var(--muted); border: 2px dashed var(--ink3); box-shadow: none; }
+#note.brief .note-cat svg { width: 18px; height: auto; }
 #note p + p { margin-top: 6px; }
 #note .warn { color: #8a3f3f; }
 #note .okk { color: #2f6a5c; }
@@ -1085,7 +1089,7 @@ const ART = {
 /* Katze Komma: 11×10, blickt nach rechts */
 const CAT = { body: ['......n...n', '......cnccc', '......ccckc', 'nn....cccfa', 'cc....cccc.', 'cc.cccccff.', '.c.cnccccf.', '.cccccnccf.', '..cccccccc.'], feetA: '....nn..ff.' };
 
-/* ===== Bilder: Detektei-Zimmer mit Funden (Verweise auf Detektivgeschichten), Katze, Symbole ===== */
+/* ===== Bilder: Detektei-Zimmer mit Ostereiern, Katze, Symbole ===== */
 const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const R = (x, y, w, h, fill, extra) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${fill}"${extra ? ' ' + extra : ''}/>`;
 
@@ -1530,7 +1534,7 @@ function award(id) {
   if (hasSticker(id)) return false;
   S.prog.st |= (1 << STICKER_INDEX[id]);
   const st = STICKERS[STICKER_INDEX[id]];
-  toast(st.egg ? 'Neuer Fund' : 'Neuer Sticker', st.name, stickerSVG(st.art, 3));
+  toast(st.egg ? 'Osterei entdeckt' : 'Neuer Sticker', st.name, stickerSVG(st.art, 3));
   Sound.sfx(st.egg ? 'egg' : 'sticker');
   updateAlbumCount(); persist();
   return true;
@@ -1546,7 +1550,9 @@ function toast(kicker, text, iconHtml) {
   while (box.children.length > 2) box.firstElementChild.remove();
   setTimeout(() => el.remove(), innerWidth <= 760 ? 2800 : 4200);
 }
+function brief(text) { note(text); $('note').classList.add('brief'); }
 function note(lines, extraHtml) {
+  $('note').classList.remove('brief');
   const html = (Array.isArray(lines) ? lines : [lines]).filter(Boolean).map(l => (typeof l === 'string' ? `<p>${esc(l)}</p>` : `<p class="${l.cls || ''}">${esc(l.t)}</p>`)).join('') + (extraHtml || '');
   $('noteBody').innerHTML = html;
   $('noteBody').scrollTop = 0;
@@ -1820,13 +1826,13 @@ function openDoc() {
   if (doc.stufe === 3) {
     S.placed = S.D.sents.map(() => new Set()); S.doneS = S.D.sents.map(() => false); S.tries = S.D.sents.map(() => 0);
     setMode('orig');
-    note([{ t: S.train ? `Kommatraining: ${S.train.label}` : S.c === FIN ? 'Der Brief der Elster – ohne ein einziges Komma.' : 'Stufe 3: Kommas setzen', cls: 'okk' }, 'Alle Kommas fehlen. Tippe in der Lupe auf die Lücken, um Kommas zu setzen. Dann tippe auf „Satz prüfen“. Manche Sätze brauchen gar kein Komma.']);
+    brief(S.train ? `Training · ${S.train.label}: Setze die Kommas, dann „Satz prüfen“.` : S.c === FIN ? 'Der Brief der Elster – ohne ein einziges Komma. Setze alle Kommas.' : 'Stufe 3 · Setze alle Kommas, dann „Satz prüfen“.');
   } else {
     setMode('check');
     if (doc.stufe === 1) {
       const n = S.D.forg.length;
-      note(S.tut ? 'Ein Übungszettel von Ida.' : [{ t: 'Stufe 1: mit Feder', cls: 'okk' }, `Die Feder zeigt dir, in welchem Satz gefälscht wurde. ${n === 1 ? 'Eine Fälschung ist' : n + ' Fälschungen sind'} versteckt. Lies Satz für Satz – mit „Nächster Satz“ geht es weiter.`]);
-    } else note([{ t: 'Stufe 2: selbst suchen', cls: 'okk' }, 'Keine Feder hilft mehr. Prüfe Satz für Satz – mit „Nächster Satz“ geht es weiter. Manche Dokumente sind ganz echt. Nach dem letzten Satz stempelst du.']);
+      brief(S.tut ? 'Ein Übungszettel von Ida.' : `Stufe 1 · Die Feder zeigt, wo gefälscht wurde (${S.D.forg.length}×).`);
+    } else brief('Stufe 2 · Prüfe Satz für Satz. Manche Dokumente sind echt.');
   }
   renderAll();
   if (S.tut) return Coach.start(tutorialSteps(), endTutorial);
@@ -2291,31 +2297,13 @@ document.addEventListener('keydown', e => {
 $('bMenu').onclick = () => showMenu();
 $('bBook').onclick = () => showBook();
 $('bAlbum').onclick = () => showAlbum();
-/* Vollbild nur, wo es hier erlaubt ist. In der Spiel-Ebene von „Komma ermittelt“ ist es für das Spiel-Fenster gesperrt
-   (document.fullscreenEnabled ist dann false); dort übernimmt der Vollbild-Knopf in der Leiste der Detektei.
-   Einzeln geöffnet behält das Spiel seinen Knopf. */
-const fsOK = !!(document.fullscreenEnabled || document.webkitFullscreenEnabled);
-const fsActive = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
-const FS_AN = '<rect x="0" y="0" width="4" height="1"/><rect x="0" y="0" width="1" height="4"/><rect x="6" y="0" width="4" height="1"/><rect x="9" y="0" width="1" height="4"/><rect x="0" y="9" width="4" height="1"/><rect x="0" y="6" width="1" height="4"/><rect x="6" y="9" width="4" height="1"/><rect x="9" y="6" width="1" height="4"/>';
-const FS_AUS = '<rect x="0" y="3" width="4" height="1"/><rect x="3" y="0" width="1" height="4"/><rect x="6" y="3" width="4" height="1"/><rect x="6" y="0" width="1" height="4"/><rect x="0" y="6" width="4" height="1"/><rect x="3" y="6" width="1" height="4"/><rect x="6" y="6" width="4" height="1"/><rect x="6" y="6" width="1" height="4"/>';
-function showFs() {
-  const an = fsActive(), b = $('bFull');
-  b.querySelector('svg').innerHTML = an ? FS_AUS : FS_AN;
-  b.setAttribute('aria-label', an ? 'Vollbild beenden' : 'Vollbild');
-  b.title = an ? 'Vollbild beenden' : 'Vollbild';
-}
-function toggleFS() {
-  const d = document, el = d.documentElement;
+$('bFull').onclick = () => {
   try {
-    if (fsActive()) { const p = (d.exitFullscreen || d.webkitExitFullscreen).call(d); if (p && p.catch) p.catch(() => {}); }
-    else { const p = (el.requestFullscreen || el.webkitRequestFullscreen).call(el); if (p && p.catch) p.catch(() => toast('Vollbild', 'Hier nicht verfügbar')); }
+    if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+    else if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => toast('Vollbild', 'Hier nicht verfügbar'));
+    else toast('Vollbild', 'Hier nicht verfügbar');
   } catch (e) { toast('Vollbild', 'Hier nicht verfügbar'); }
-}
-if (fsOK) {
-  $('bFull').onclick = toggleFS;
-  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, showFs));
-  showFs();
-} else $('bFull').hidden = true;
+};
 $('bSound').onclick = () => { const on = !(S.settings.music || S.settings.sfx); S.settings.music = on; S.settings.sfx = on; applySound(); persist(); };
 function applySound() {
   Sound.setMusic(S.settings.music); Sound.setSfx(S.settings.sfx); Sound.setQuietRead(S.settings.quietRead);
@@ -2547,11 +2535,11 @@ function showAlbum() {
     const has = (S.prog.st & (1 << i)) !== 0;
     return `<button type="button" class="stk${has ? ' has' : ''}${s.egg ? ' egg' : ''}" data-i="${i}" aria-label="${esc(has ? s.name : 'Noch nicht gefunden')}">${has ? stickerSVG(s.art, 4) : '<svg class="pix" width="48" height="48" viewBox="0 0 12 12" aria-hidden="true"><rect x="3" y="2" width="6" height="2" fill="#4b3f7a"/><rect x="7" y="4" width="2" height="2" fill="#4b3f7a"/><rect x="5" y="6" width="2" height="2" fill="#4b3f7a"/><rect x="5" y="9" width="2" height="2" fill="#4b3f7a"/></svg>'}${has ? `<span>${esc(s.name)}</span>` : ''}</button>`;
   }).join('');
-  openOverlay(`<div class="kicker">Beweismittelsammlung</div><h2 id="cardTitle">Sticker · ${stickerCount()}/${STICKERS.length}</h2><div class="album">${cells}</div><p class="stk-info" id="stkInfo">Tippe auf einen Sticker. Zwölf Funde verstecken sich in Idas Büro oben: Tippe dort die Dinge an, bevor du ein Dokument öffnest.</p><div class="row end acts"><button type="button" class="btn" data-close>Schließen</button></div>`, { closable: true });
+  openOverlay(`<div class="kicker">Beweismittelsammlung</div><h2 id="cardTitle">Sticker · ${stickerCount()}/${STICKERS.length}</h2><div class="album">${cells}</div><p class="stk-info" id="stkInfo">Tippe auf einen Sticker. Zwölf Ostereier verstecken sich in Idas Büro oben: Tippe dort die Dinge an, bevor du ein Dokument öffnest.</p><div class="row end acts"><button type="button" class="btn" data-close>Schließen</button></div>`, { closable: true });
   document.querySelectorAll('#card .stk').forEach(b => {
     b.onclick = () => {
       const s = STICKERS[+b.dataset.i], has = (S.prog.st & (1 << +b.dataset.i)) !== 0;
-      $('stkInfo').textContent = has ? `${s.name}: ${s.text}` : s.egg ? 'Noch nicht gefunden. Dieser Fund liegt in Idas Büro: Schau dich zwischen den Dokumenten dort um. Manches zeigt sich erst zu einer bestimmten Tageszeit.' : 'Noch nicht gefunden.';
+      $('stkInfo').textContent = has ? `${s.name}: ${s.text}` : s.egg ? 'Noch nicht gefunden. Ein Osterei – schau dich zwischen den Dokumenten in Idas Büro um. Manches zeigt sich erst zu einer bestimmten Tageszeit.' : 'Noch nicht gefunden.';
     };
   });
   wireClose();
