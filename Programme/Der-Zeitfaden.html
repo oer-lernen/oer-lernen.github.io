@@ -561,6 +561,10 @@ const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 function show(id){document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);}
 function fs(){const d=document;if(d.fullscreenElement){d.exitFullscreen&&d.exitFullscreen().catch(()=>{});}else{const r=d.documentElement.requestFullscreen;r&&r.call(d.documentElement).catch(()=>{});}}
 document.querySelectorAll('[data-fs]').forEach(b=>b.onclick=fs);
+/* Gesperrt = der Browser kann Vollbild, aber die umgebende Seite erlaubt es hier nicht (Spiel-Ebene von „Komma ermittelt“
+   mit eigenem Vollbild-Knopf in der Leiste). Dann gibt es keine eigenen Vollbild-Knöpfe. */
+const fsApi=!!(document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen);
+if(fsApi&&!(document.fullscreenEnabled||document.webkitFullscreenEnabled))document.querySelectorAll('[data-fs]').forEach(b=>b.hidden=true);
 document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>show('s-title'));
 
 /* ============ Overlays ============ */

@@ -166,7 +166,7 @@ pre{padding:calc(2*var(--p)) calc(3*var(--p));margin:calc(3*var(--p)) var(--p);w
     <button class="pb ib" id="bAlbum" aria-label="Stickeralbum" title="Stickeralbum"></button>
     <button class="pb ib" id="bMusic" aria-label="Musik an oder aus" title="Musik"></button>
     <button class="pb ib" id="bFull" aria-label="Vollbild" title="Vollbild (F)"></button>
-    <button class="pb ib" id="bMenu" aria-label="Menü" title="Menü"></button>
+    <button class="pb ib" id="bMenu" aria-label="Spielmenü" title="Spielmenü"></button>
     <button class="pb ib" id="bGear" aria-label="Lehrkraft-Bereich (2 Sekunden gedrückt halten)" title="Lehrkraft-Bereich: 2 Sekunden gedrückt halten"></button>
   </header>
   <section id="card" aria-live="polite">
@@ -1871,7 +1871,8 @@ function updateFsBtn() {
 ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, updateFsBtn));
 document.addEventListener('keydown', e => {
   if (e.target && (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT')) return;
-  if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey) { FS.toggle(); e.preventDefault(); }
+  /* Nur wenn Vollbild hier möglich ist; in der Spiel-Ebene von „Komma ermittelt“ übernimmt deren Vollbild-Knopf */
+  if ((e.key === 'f' || e.key === 'F') && !e.ctrlKey && !e.metaKey && !e.altKey && FS.can()) { FS.toggle(); e.preventDefault(); }
 });
 
 // =========================================================
