@@ -532,7 +532,7 @@
       titel: 'Puzzle & Quiz',
       untertitel: 'Gib den Code ein, den du von deiner Lehrkraft bekommen hast.',
       generatorLink: 'Der-Puzzle-Generator.html',     // Puzzle-Generator – leer lassen, um den Link auszublenden
-      quizEditorLink: 'Der-Quiz-Generator.html'   // Quiz-Editor – leer lassen, um den Link auszublenden
+      quizEditorLink: 'Der-Quiz-Generator.html'   // Quiz-Generator – leer lassen, um den Link auszublenden
     };
     /* Die Code-Liste (puzzles/liste.js) ruft diese Funktion auf. */
     window.puzzleListe = function (text) { window.PUZZLE_LISTE_TEXT = String(text); };
@@ -671,6 +671,15 @@
           const t = document.createElement('span'); t.append('Für Lehrkräfte: ');
           links.forEach(([href, label], i) => { if (i) t.append(' · '); const a = document.createElement('a'); a.href = href; a.textContent = label; t.append(a); });
           f.append(t);
+        }
+        /* Rechtliche Links nur, wenn der Player allein geöffnet ist; in der Detektei zeigt deren Leiste sie */
+        let allein = true; try { allein = window.top === window.self; } catch (e) { allein = false; }
+        if (allein) {
+          const r = document.createElement('span');
+          [['Impressum', '../impressum.html'], ['Datenschutz', '../datenschutz.html'], ['Lizenzen', '../lizenzen.html']].forEach(([label, href], i) => {
+            if (i) r.append(' · '); const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = label; r.append(a);
+          });
+          f.append(r);
         }
       })();
 

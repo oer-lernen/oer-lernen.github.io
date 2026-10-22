@@ -3,7 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quiz-Editor</title>
+<title>Quiz-Generator</title>
+<script>
+/* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
+try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
+</script>
 <meta name="description" content="Quiz mit vier Antwortkacheln, Countdown, Punkten und Chiptune-Musik erstellen – für das Smartboard oder zum Allein-Spielen.">
 <style>
 @font-face{font-family:"Kachel";src:url(data:font/woff;base64,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) format("woff");font-display:block}
@@ -147,6 +151,11 @@ dialog textarea{min-height:240px;font-size:15px;white-space:pre;overflow-x:auto}
   .qtext-input{font-size:20px!important}
   .stage{padding:10px}
 }
+
+/* Rechtliche Links nur, wenn das Programm allein geöffnet ist */
+.eingebettet .nur-allein{display:none!important}
+.rechtsfuss{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;padding:8px 16px 28px;font-size:14px}
+.rechtsfuss a{color:inherit;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -154,7 +163,7 @@ dialog textarea{min-height:240px;font-size:15px;white-space:pre;overflow-x:auto}
   <div class="top-inner">
     <span class="logo" id="logo"></span>
     <div>
-      <h1>Quiz-Editor</h1>
+      <h1>Quiz-Generator</h1>
       <p>Fragen mit bis zu vier Antwortkacheln, Countdown, Punkten und Chiptune-Musik. Gespielt wird allein auf dem eigenen Gerät oder als Klassen-Duell am Smartboard.</p>
     </div>
     <div class="top-tools">
@@ -248,6 +257,7 @@ dialog textarea{min-height:240px;font-size:15px;white-space:pre;overflow-x:auto}
     </div>
   </aside>
 </main>
+<footer class="rechtsfuss nur-allein" aria-label="Rechtliches"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></footer>
 <p class="status" id="status" role="status" aria-live="polite"></p>
 
 <dialog id="listDialog" aria-labelledby="listTitle">
@@ -1660,7 +1670,7 @@ async function openProject(file) {
     });
     if (!quiz.questions.length) quiz.questions.push(newQuestion('quiz'));
     cur = 0; stopPreview(); renderAll(); setStatus(`Quiz „${quiz.title}“ geöffnet.`);
-  } catch (e) { setStatus('Diese Datei ist keine Projektdatei des Quiz-Editors.'); }
+  } catch (e) { setStatus('Diese Datei ist keine Projektdatei des Quiz-Generators.'); }
 }
 
 /* ---------- Verdrahtung ---------- */

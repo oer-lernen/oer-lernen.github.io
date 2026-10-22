@@ -6,6 +6,10 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>Die Fälscherwerkstatt</title>
+<script>
+/* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
+try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
+</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Komma ermittelt: Ein ruhiges Pixel-Detektivspiel zu den Kommaregeln. Gefälschte Dokumente prüfen, Fälschungen beweisen, Originale wiederherstellen (Amtliches Regelwerk 2024).">
 <style>
@@ -413,6 +417,10 @@ input.codein { font: inherit; letter-spacing: 2px; background: var(--ink0); colo
 @media (prefers-reduced-motion: reduce) {
   .toast, .egg .spark, .stamp, #cat.hop svg, .dot, .lupe-row .w.lift, #room { animation: none !important; transition: none !important; }
 }
+
+/* Rechtliche Links nur, wenn das Programm allein geöffnet ist */
+.eingebettet .nur-allein{display:none!important}
+.rechtslinks{display:flex;gap:18px;flex-wrap:wrap}
 </style>
 </head>
 <body>
@@ -2304,6 +2312,10 @@ $('bFull').onclick = () => {
     else toast('Vollbild', 'Hier nicht verfügbar');
   } catch (e) { toast('Vollbild', 'Hier nicht verfügbar'); }
 };
+/* Gesperrt = der Browser kann Vollbild, aber die umgebende Seite erlaubt es hier nicht (Spiel-Ebene von „Komma ermittelt“
+   mit eigenem Vollbild-Knopf in der Leiste). Dann gibt es keinen eigenen Vollbild-Knopf. */
+if ((document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)
+    && !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) $('bFull').hidden = true;
 $('bSound').onclick = () => { const on = !(S.settings.music || S.settings.sfx); S.settings.music = on; S.settings.sfx = on; applySound(); persist(); };
 function applySound() {
   Sound.setMusic(S.settings.music); Sound.setSfx(S.settings.sfx); Sound.setQuietRead(S.settings.quietRead);
@@ -2485,8 +2497,9 @@ function showTitle() {
       ${started ? '<button type="button" class="btn big" id="tTrain">Kommatraining</button><button type="button" class="btn big" id="tMap">Alle Fälle</button><button type="button" class="btn big" id="tTut">Anleitung</button>' : ''}
       <button type="button" class="btn big" id="tPartner">Zu zweit</button>
     </div>
-    <div class="title-more"><button type="button" class="linkish" id="tBook">Kommabuch</button><button type="button" class="linkish" id="tAlbum">Sticker</button><button type="button" class="linkish" id="tSet">Einstellungen</button><button type="button" class="linkish" id="tInfo">Info &amp; Datenschutz</button></div>
-    <p class="small">Mit Musik. Ausschalten: Lautsprecher-Knopf oben rechts.</p>`, { quiet: true, cls: 'title' });
+    <div class="title-more"><button type="button" class="linkish" id="tBook">Kommabuch</button><button type="button" class="linkish" id="tAlbum">Sticker</button><button type="button" class="linkish" id="tSet">Einstellungen</button><button type="button" class="linkish" id="tInfo">Info</button></div>
+    <p class="small">Mit Musik. Ausschalten: Lautsprecher-Knopf oben rechts.</p>
+    <p class="small rechtslinks nur-allein"><a class="linkish" href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a class="linkish" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a class="linkish" href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>`, { quiet: true, cls: 'title' });
   if (started) { $('tTut').onclick = () => startTutorial(false); $('tMap').onclick = () => showMenu(); $('tTrain').onclick = () => showTraining(); }
   $('tStart').onclick = () => {
     wakeSound();
@@ -2769,10 +2782,8 @@ function showSettings(confirmReset) {
 }
 function showInfo() {
   openOverlay(`<div class="kicker">Info</div><h2 id="cardTitle">Über das Spiel</h2>
-    <div class="sec"><h3>Datenschutz</h3><p>Das Spiel sendet keine Daten und lädt nichts aus dem Internet: Schrift, Bilder und Klänge stecken in dieser einen Datei. Es gibt keine Cookies, kein Tracking, keine Namenseingabe und keine Freitexte.</p><p>Gespeichert wird nur, wenn du es in den Einstellungen einschaltest – und dann nur im Browser auf diesem Gerät. Ausschalten löscht den Speicherstand. Ohne Speichern hilft das Aktenzeichen (der Code zum Weiterspielen).</p></div>
     <div class="sec"><h3>Regelgrundlage</h3><p>Amtliches Regelwerk der deutschen Rechtschreibung, Fassung 2024, Kapitel „Komma“ (§ 70–73, Abschnitte 2.4 und 2.5). Infinitivgruppen werden seit 2024 verbindlich mit Komma abgetrennt. Alle Regeln stehen im Kommabuch.</p><p class="small">Begriffe im Spiel: Die fünf Kommaregeln heißen wie in den Schulbüchern – Aufzählung, Gegensatz, Nebensatz, Infinitivgruppe (Infinitivkonstruktion) und Zusatz. „Zusatz“ umfasst Einschub, Beisatz (Apposition), Nachtrag, Anrede, Ausruf und Herausstellung. Fachwörter wie Personalform, Einleitewort und Prädikat werden im Kommabuch erklärt.</p></div>
     <div class="sec"><h3>So wird gespielt</h3><p>Komma prüft ein Dokument Satz für Satz. Jeder Satz erscheint groß in der Lupe. Tippe auf eine verdächtige Lücke, wähle die Kommaregel und belege deinen Verdacht mit einem Beweiswort aus dem Satz. Mit „Nächster Satz“ geht es weiter, nach dem letzten Satz stempelst du: echt oder gefälscht. In Stufe 3 setzt du alle Kommas selbst.</p><div class="row"><button type="button" class="btn" id="iTut">Anleitung starten</button></div><p class="small">Tastatur: Pfeil hoch und runter wechselt den Satz, Pfeil links und rechts wandert durch die Lupe, die Tasten 1 bis 6 wählen die Regel, Escape bricht ab.</p></div>
-    <div class="sec"><h3>Lizenz</h3><p>Die Fälscherwerkstatt · Idee und Material: Sebastian Wolf · CC BY-SA 4.0. Pixelschrift „Komma Pixel“, Grafik und Musik wurden eigens für das Spiel erstellt. Alle literarischen Anspielungen beziehen sich auf gemeinfreie Werke.</p></div>
     <div class="row end acts"><button type="button" class="btn" data-close>Schließen</button></div>`, { closable: true });
   $('iTut').onclick = () => startTutorial(false);
   wireClose();

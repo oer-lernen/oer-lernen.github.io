@@ -6,6 +6,10 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Der Kasus-Teich</title>
+<script>
+/* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
+try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
+</script>
 <style>
 :root{--p:3px;--q:2px;--ink:#3A3350;--soft:#6E6688;--paper:#FFF7EA;--card:#FFFDF8;--line:#E7DCF2;--frame:#5E4BA8;--frame2:#B9A6E0;--btn:#8C7BD1;--btn-hi:#B4A8E8;--btn-sh:#6A59B2;--btn-bd:#3F3470;--mark:#D9CEF6;--mark-d:#7058C8;--font:Verdana,Tahoma,"Segoe UI","Trebuchet MS",Arial,sans-serif}
 *{box-sizing:border-box}
@@ -153,6 +157,11 @@ pre{padding:calc(2*var(--p)) calc(3*var(--p));margin:calc(3*var(--p)) var(--p);w
 #titleCv{width:100%;max-width:460px;display:block;margin:var(--p) auto calc(2*var(--p))}
 @media (max-width:1100px){.chip .full{display:none}.chip .ab{display:inline}}
 @media (max-width:700px){#hud{flex-wrap:wrap;row-gap:0}#pips{order:1}.score{font-size:15px}.set{grid-template-columns:1fr}.panel{padding:calc(4*var(--p)) calc(4*var(--p))}}
+
+/* Rechtliche Links nur, wenn das Programm allein geöffnet ist */
+.eingebettet .nur-allein{display:none!important}
+.rechtslinks{display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
+.rechtslinks a{color:inherit;text-underline-offset:3px}
 </style>
 </head>
 <body>
@@ -1972,7 +1981,8 @@ function showStart() {
     <div id="teamNote" class="small" style="display:none">Gilt ab dem nächsten neuen Spiel.</div>
     <div style="margin-top:calc(4*var(--p))">${running ? '<button class="pb" id="bCont">Weiterspielen</button>' : ''}<button class="pb ${running ? 'alt' : 'gold'}" id="bGo">${running ? 'Neues Spiel' : 'Los geht’s!'}</button></div>
     <div><button class="pb alt sm" id="bHow">So geht’s</button><button class="pb alt sm" id="bAlb2">Stickeralbum</button><button class="pb alt sm" id="bFull2"></button></div>
-    <p class="small">Bestwert heute: <b>${G.best}</b> Punkte · Für Lehrkräfte: Zahnrad oben rechts 2 Sekunden gedrückt halten.</p>`;
+    <p class="small">Bestwert heute: <b>${G.best}</b> Punkte · Für Lehrkräfte: Zahnrad oben rechts 2 Sekunden gedrückt halten.</p>
+    <p class="small rechtslinks nur-allein"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>`;
   const body = $('#startBody');
   pixTitle($('#tStart'), 'Der Kasus-Teich', { k: window.innerWidth > 760 ? 4 : 3, size: 12, fill: '#FBE38E', outline: '#5E4BA8', shadow: '#B9A6E0' });
   bindSegs(body, (k) => { applySetting(k); if (k === 'teams' && running) $('#teamNote').style.display = ''; });

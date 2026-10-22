@@ -6,6 +6,10 @@
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wortarten-Labor</title>
+<script>
+/* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
+try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
+</script>
 <style>
 /* Layout: Laborbank links (Prüfband oben, Maschinen darunter, in Reichweite am Smartboard),
    Laborplan rechts (Baum oben nur zum Ansehen, Schubladen unten zum Tippen).
@@ -434,6 +438,11 @@ html.no-flexgap .btn .ico{margin-right:.4em}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation:none!important;transition:none!important}
 }
+
+/* Rechtliche Links nur, wenn das Programm allein geöffnet ist */
+.eingebettet .nur-allein{display:none!important}
+.rechtslinks{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:13px;margin:0 12px}
+.rechtslinks a{color:inherit;text-underline-offset:3px}
 </style>
 <style>
 /* Labor Pixel: eigene Pixelschrift, in die Datei eingebettet (keine Web-Schrift aus dem Internet) */
@@ -2526,6 +2535,7 @@ function storyRender(){
   openDialog(storyTitle, `${visual}
     <p class="story-text">${st.html}</p>
     <div class="dialog-actions"><button class="btn" type="button" data-act="storySkip">Überspringen</button>
+      <span class="rechtslinks nur-allein"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></span>
       <div class="right"><button class="btn big primary" type="button" data-act="storyNext">${last ? (st.last || 'Ins Labor') : 'Weiter'} ▶</button></div></div>`, { wide: !!st.plan });
   storyOpen = true;
   if (!st.plan) drawScene($('#sceneCv'), st.scene);

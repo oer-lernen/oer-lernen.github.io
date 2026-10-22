@@ -1,6 +1,6 @@
 # Komma ermittelt – Sprachdetektei
 
-Lernspiele, Puzzles und Quizze von Sebastian Wolf, veröffentlicht über GitHub Pages unter https://oer-lernen.github.io/.
+Lernspiele, Puzzles und Quizze von Sebastian Wolf, veröffentlicht über GitHub Pages (Repository oer-lernen.github.io) unter https://www.kommakatze.de/.
 Die Lernmaterialien stehen unter CC BY-SA 4.0 (Einzelheiten und Schriftlizenzen: `lizenzen.html`).
 
 ## Ordner
@@ -8,6 +8,7 @@ Die Lernmaterialien stehen unter CC BY-SA 4.0 (Einzelheiten und Schriftlizenzen:
 ```
 index.html            Startseite (Fallakten, Aktenzeichen, Menü für Lehrkräfte)
 impressum.html        Impressum
+404.html              Seite für falsche Adressen (GitHub Pages zeigt sie automatisch)
 datenschutz.html      Hinweis zum Datenschutz
 lizenzen.html         Lizenz der Materialien und der Schriften
 assets/css/           Gestaltung für Startseite und Rechtsseiten
@@ -34,8 +35,9 @@ und für „Code-Liste prüfen“.
 - Zurück und Vollbild gibt es nur in der Leiste der Spiel-Ebene. Das Spiel-Fenster darf kein eigenes Vollbild anfordern
   (`allow="fullscreen 'none'"`); die Spiele blenden ihren Vollbild-Knopf dann aus. Einzeln geöffnet behalten sie ihn.
 - Impressum, Datenschutz und Lizenzen öffnen sich aus der Spiel-Ebene in einem neuen Tab, damit der Spielstand erhalten bleibt.
-- Die Spiele zeigen in der Detektei keine eigenen Rechtslinks; die Leiste übernimmt das. Einzeln geöffnet zeigt der Zeitfaden
-  unten Links auf dieselben Seiten (Impressum, Datenschutz, Lizenzen).
+- Die Spiele zeigen in der Detektei keine eigenen Rechtslinks; die Leiste übernimmt das. Einzeln geöffnet zeigen alle Lernspiele,
+  der Quiz-Player und die Generatoren kleine Links auf dieselben Seiten (Impressum, Datenschutz, Lizenzen).
+  Erkennung: Ein kurzes Skript im Kopf jeder Datei setzt die Klasse `eingebettet`, wenn die Datei in einem iframe läuft.
 
 ## Tag und Nacht
 
@@ -45,7 +47,7 @@ und für „Code-Liste prüfen“.
 
 ## Adressen zum Verlinken
 
-- Ein Spiel direkt öffnen: `https://oer-lernen.github.io/#fall/zeitfaden`
+- Ein Spiel direkt öffnen: `https://www.kommakatze.de/#fall/zeitfaden`
   (außerdem `fall/wortarten-labor`, `fall/wortwurfbude`, `fall/kasus-teich`, `fall/abteil-7`, `fall/faelscherwerkstatt`)
-- Eine Akte direkt öffnen: `https://oer-lernen.github.io/#akte/GRIMM`
+- Eine Akte direkt öffnen: `https://www.kommakatze.de/#akte/GRIMM`
 - Werkzeuge: `#werkzeug/puzzle-generator`, `#werkzeug/quiz-generator`, `#werkzeug/code-liste`
