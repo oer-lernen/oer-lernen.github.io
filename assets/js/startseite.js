@@ -150,17 +150,23 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------- Schreibtischlampe: Licht an = Nacht, Licht aus = Tag (tageszeit.js) ---------- */
   var lampe = $('lampen-knopf');
+  var tagKnopf = $('tageszeit-knopf');
   function zeigeLampe() {
     var nacht = document.documentElement.getAttribute('data-zeit') !== 'tag';
     var text = nacht ? 'Licht ausschalten (Tagansicht)' : 'Licht einschalten (Nachtansicht)';
     lampe.setAttribute('aria-label', text);
     lampe.title = text;
+    /* Knopf in der Kopfzeile: fester Name „Nacht“, gedrückt = Nachtansicht ist an */
+    tagKnopf.setAttribute('aria-pressed', String(nacht));
+    tagKnopf.title = nacht ? 'Zur Tagansicht wechseln' : 'Zur Nachtansicht wechseln';
   }
   if (typeof window.tageszeitUmschalten === 'function') {
-    lampe.addEventListener('click', function () {
+    var umschalten = function () {
       var neu = window.tageszeitUmschalten();
       piep(neu === 'nacht' ? [[440, 0.04], [660, 0.08]] : [[660, 0.04], [440, 0.08]]);
-    });
+    };
+    lampe.addEventListener('click', umschalten);
+    tagKnopf.addEventListener('click', umschalten);
     /* Die Beschriftung folgt jedem Wechsel, auch dem automatischen nach Uhrzeit */
     if (window.MutationObserver) {
       new MutationObserver(zeigeLampe).observe(document.documentElement, { attributes: true, attributeFilter: ['data-zeit'] });
@@ -170,6 +176,7 @@ document.addEventListener('DOMContentLoaded', function () {
     zeigeLampe();
   } else {
     lampe.hidden = true;
+    tagKnopf.hidden = true;
   }
 
   /* ---------- Menü „Für Lehrkräfte“: schließt bei Klick daneben und mit Escape ---------- */
@@ -388,6 +395,7 @@ document.addEventListener('DOMContentLoaded', function () {
      so läuft die Zurück-Taste des Browsers danach nicht ins Leere. Sonst (z. B. Seite über einen Link geöffnet)
      die Ebene schließen und die Adresse aufräumen, ohne die Seite zu verlassen. */
   $('buehne-zurueck').addEventListener('click', function () {
+    if (aktuellesZiel && aktuellesZiel.akte && !window.confirm('Akte schließen? Was du in dieser Akte schon gelöst hast, wird nicht gespeichert.')) return;
     var eigenerEintrag = history.state && history.state.detektei && history.length === laengeBeimOeffnen;
     schliesse();
     if (eigenerEintrag) history.back(); else raeumeAdresseAuf();

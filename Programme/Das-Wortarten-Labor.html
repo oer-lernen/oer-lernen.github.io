@@ -2,10 +2,12 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<meta name="description" content="Wortarten untersuchen, bestimmen und einordnen – ein Labor mit Proben und Maschinen.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xIC0xIDEyIDEyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPgogIDxyZWN0IHg9Ii0xIiB5PSItMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZGNERFIi8+CiAgPHBhdGggZmlsbD0iI0U4QTM1QyIgZD0iTTAgMGgxdjFoLTF6TTkgMGgxdjFoLTF6TTAgMWgydjFoLTJ6TTggMWgydjFoLTJ6TTAgMmgxdjFoLTF6TTIgMmgxdjFoLTF6TTcgMmgxdjFoLTF6TTkgMmgxdjFoLTF6TTAgM2gxMHYxaC0xMHpNMCA0aDEwdjFoLTEwek0wIDVoMnYxaC0yek00IDVoMnYxaC0yek04IDVoMnYxaC0yek0wIDZoMnYxaC0yek0zIDZoM3YxaC0zek03IDZoM3YxaC0zek0wIDdoNHYxaC00ek02IDdoNHYxaC00ek0xIDhoOHYxaC04ek0yIDloNnYxaC02eiIvPgogIDxwYXRoIGZpbGw9IiNDNDdBM0EiIGQ9Ik00IDNoMnYxaC0yek0wIDRoMXYxaC0xek05IDRoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiNGNEE2QjgiIGQ9Ik0xIDJoMXYxaC0xek04IDJoMXYxaC0xek00IDdoMnYxaC0yeiIvPgogIDxwYXRoIGZpbGw9IiM2Q0MwN0EiIGQ9Ik0yIDVoMnYxaC0yek02IDVoMnYxaC0yek0yIDZoMXYxaC0xek02IDZoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiMyQTIxMzgiIGQ9Ik0zIDZoMXYxaC0xek03IDZoMXYxaC0xeiIvPgo8L3N2Zz4=">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; connect-src 'none'; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Wortarten-Labor</title>
+<title>Das Wortarten-Labor – Komma ermittelt</title>
 <script>
 /* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
 try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
@@ -465,7 +467,7 @@ html.no-flexgap .btn .ico{margin-right:.4em}
       <button class="btn" id="albumBtn" type="button"><canvas class="ico" data-sprite="album" aria-hidden="true"></canvas>Album</button>
       <button class="btn" id="soundBtn" type="button" aria-pressed="false"><canvas class="ico" id="soundIco" aria-hidden="true"></canvas><span id="soundLbl">Ton aus</span></button>
       <button class="btn" id="fsBtn" type="button" aria-pressed="false" hidden><canvas class="ico" id="fsIco" aria-hidden="true"></canvas><span id="fsLbl">Vollbild</span></button>
-      <button class="btn gear" id="gearBtn" type="button" aria-label="Lehrkraft-Bereich, 2 Sekunden gedrückt halten" title="Lehrkraft: 2 Sekunden gedrückt halten"><canvas class="ico" data-sprite="gear" aria-hidden="true"></canvas><span class="hold"></span></button>
+      <button class="btn gear" id="gearBtn" type="button" aria-label="Für Lehrkräfte: 2 Sekunden gedrückt halten" title="Für Lehrkräfte: 2 Sekunden gedrückt halten"><canvas class="ico" data-sprite="gear" aria-hidden="true"></canvas><span class="hold"></span></button>
     </div>
   </header>
 
@@ -2350,7 +2352,7 @@ function startRound(r){
   if (k < 0) k = nextPlayableRound(0);
   if (k < 0){
     S.phase = 'idle'; S.entry = null; render();
-    setBubble('Für diese Einstellung gibt es keine Wörter. Schalte im Lehrkraft-Bereich eine Wortart ein.', 'think');
+    setBubble('Für diese Einstellung gibt es keine Wörter. Schalte unter „Für Lehrkräfte“ eine Wortart ein.', 'think');
     return;
   }
   S.r = k; S.i = 0;
@@ -2535,7 +2537,7 @@ function storyRender(){
   openDialog(storyTitle, `${visual}
     <p class="story-text">${st.html}</p>
     <div class="dialog-actions"><button class="btn" type="button" data-act="storySkip">Überspringen</button>
-      <span class="rechtslinks nur-allein"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></span>
+      <span class="rechtslinks nur-allein"><a href="https://www.kommakatze.de/" target="_blank" rel="noopener">Zur Detektei</a> <a href="https://www.kommakatze.de/impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="https://www.kommakatze.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="https://www.kommakatze.de/lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></span>
       <div class="right"><button class="btn big primary" type="button" data-act="storyNext">${last ? (st.last || 'Ins Labor') : 'Weiter'} ▶</button></div></div>`, { wide: !!st.plan });
   storyOpen = true;
   if (!st.plan) drawScene($('#sceneCv'), st.scene);
@@ -2781,7 +2783,9 @@ const GUIDE_HTML = `<div class="guide-text">
   <h3>Datenschutz</h3>
   <p>Die Datei „Wortarten-Labor.html“ läuft vollständig auf dem Gerät. Sie lädt nichts aus dem Internet (alle Schriften, Bilder und Klänge stecken in der Datei), sendet nichts und enthält weder Statistik noch Werbung. Eine eingebaute Sperre (Content-Security-Policy) blockiert zusätzlich jede Verbindung nach außen. Der Reiter „Technik-Check“ zeigt beides an.</p>
   <p>Das Labor fragt keine Namen ab und speichert nichts: keine Cookies, kein Browser-Speicher, kein Zwischenstand. Schubladen, Album und Änderungen in der Werkstatt gelten nur, bis die Seite geschlossen oder neu geladen wird. Das Labor selbst verarbeitet damit keine personenbezogenen Daten.</p>
-  <p>Für den Unterricht: Öffne die Datei direkt auf dem Gerät (Doppelklick, auch ohne Internet) oder stelle sie auf euren Schulserver bzw. eure Lernplattform; dort gelten die üblichen Regeln eurer Schule. Gib Schülerinnen und Schülern keinen Vorschau-Link eines fremden Anbieters (z. B. claude.ai). Wenn du die Datei mit eigenen Wörtern weitergibst, trage keine echten Namen von Kindern ein.</p></div>`;
+  <p>Für den Unterricht: Öffne die Datei direkt auf dem Gerät (Doppelklick, auch ohne Internet) oder stelle sie auf euren Schulserver bzw. eure Lernplattform; dort gelten die üblichen Regeln eurer Schule. Gib Schülerinnen und Schülern keinen Vorschau-Link eines fremden Anbieters (z. B. claude.ai). Wenn du die Datei mit eigenen Wörtern weitergibst, trage keine echten Namen von Kindern ein.</p>
+  <h3>Über dieses Spiel</h3>
+  <p>„Das Wortarten-Labor“ von Sebastian Wolf · Lizenz CC BY-SA 4.0 · Stand: Oktober 2026. Programmiert mit Unterstützung von KI (Claude, Anthropic). Idee, Inhalte und fachliche Prüfung: Sebastian Wolf. Lizenzen und Schriften: www.kommakatze.de/lizenzen.html</p></div>`;
 /* ---------- Technik-Check: zeigt, was Browser und Bildschirm können ---------- */
 function techInfo(){
   const ua = navigator.userAgent || '';
@@ -2889,7 +2893,7 @@ function renderTeacher(){
   }
   if (teacherTab === 'help') body = GUIDE_HTML;
   if (teacherTab === 'tech') body = techHTML();
-  openDialog('Lehrkraft-Bereich', `<div class="tabs" role="tablist">${tab('set', 'Einstellungen')}${tab('md', 'Werkstatt')}${tab('help', 'Anleitung')}${tab('tech', 'Technik-Check')}</div>
+  openDialog('Für Lehrkräfte', `<div class="tabs" role="tablist">${tab('set', 'Einstellungen')}${tab('md', 'Werkstatt')}${tab('help', 'So geht’s')}${tab('tech', 'Technik-Check')}</div>
     <div>${body}</div>
     <div class="dialog-actions"><span></span><div class="right"><button class="btn big primary" type="button" data-act="close">Fertig</button></div></div>`, { wide: true, closable: true });
 }
@@ -3012,7 +3016,7 @@ function bindEvents(){
   const stop = () => {
     if (!holdTimer) return;
     clearTimeout(holdTimer); holdTimer = null; gear.classList.remove('holding');
-    toast('Lehrkraft-Bereich: Zahnrad 2 Sekunden gedrückt halten');
+    toast('Für Lehrkräfte: Zahnrad 2 Sekunden gedrückt halten');
   };
   gear.addEventListener('pointerdown', e => { e.preventDefault(); start(); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => gear.addEventListener(ev, stop));

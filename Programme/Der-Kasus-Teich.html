@@ -2,10 +2,132 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<!-- EINWILLIGUNG -->
+<script>
+/* EINWILLIGUNG v1 – Speichern auf diesem Gerät nur mit Einwilligung (wie Silbenexpress und Kommas Zählrahmen)
+   Quelle: assets/js/einwilligung.js. Dieser Block steckt wortgleich in jedem Spiel, das etwas speichert,
+   damit die Spiele auch einzeln und offline laufen. Nach einer Änderung hier: python3 werkzeuge/einwilligung_einbauen.py
+
+   - Beim ersten Start fragt ein Fenster „Eine Frage an die Erwachsenen“.
+   - „Ja, merken“: Die Einwilligung (kommas-einwilligung-v1) gilt für alle Spiele dieser Website.
+   - „Nein, nichts speichern“: Es wird nichts gespeichert, auch nicht die Antwort. Beim nächsten Start fragt das Spiel erneut.
+   - Widerruf unter „Für Lehrkräfte“ → „Auf diesem Gerät merken: Nicht merken“: Alle Spielstände dieser Website werden gelöscht.
+   Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG.
+
+   Für das Spiel: KommaSpeicher.darf() vor jedem Lesen und Schreiben prüfen;
+   KommaSpeicher.frage(name, beiJa) einmal beim Start aufrufen;
+   KommaSpeicher.setze(true|false) für den Schalter im Lehrkräfte-Menü; KommaSpeicher.beiAenderung(fn). */
+(function () {
+  'use strict';
+  if (window.KommaSpeicher) return;
+  var SCHLUESSEL = 'kommas-einwilligung-v1';
+  /* Alle Speicherstände der Sprachdetektei: werden beim Widerruf gelöscht */
+  var PRAEFIXE = ['kommas-einwilligung', 'abteil7', 'kasusteich', 'zeitfaden', 'wortwurfbude', 'faelscherwerkstatt'];
+  var DATENSCHUTZ = 'https://www.kommakatze.de/datenschutz.html';
+  var zustand = null;          /* true = ja, false = nein (nur für diesen Aufruf), null = noch nicht gefragt */
+  var hoerer = [];
+
+  function lies() { try { return localStorage.getItem(SCHLUESSEL) === 'ja'; } catch (e) { return false; } }
+  if (lies()) zustand = true;
+
+  function loescheAlles() {
+    try {
+      var weg = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i) || '';
+        if (PRAEFIXE.some(function (p) { return k.indexOf(p) === 0; })) weg.push(k);
+      }
+      weg.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) { /* ohne Speicher gibt es nichts zu löschen */ }
+  }
+
+  function setze(ja) {
+    zustand = !!ja;
+    if (ja) { try { localStorage.setItem(SCHLUESSEL, 'ja'); } catch (e) {} }
+    else loescheAlles();
+    hoerer.forEach(function (fn) { try { fn(zustand); } catch (e) {} });
+  }
+
+  function stil() {
+    if (document.getElementById('komma-einwilligung-stil')) return;
+    var s = document.createElement('style');
+    s.id = 'komma-einwilligung-stil';
+    s.textContent =
+      '.ke-hg{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(30,20,40,.6)}' +
+      '.ke-karte{max-width:460px;width:100%;max-height:calc(100% - 32px);overflow:auto;background:#FFFDF6;color:#2A2138;border:4px solid #2A2138;border-radius:18px;box-shadow:6px 6px 0 #2A2138;padding:20px 22px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left}' +
+      '.ke-karte h2{margin:0 0 8px;font-size:1.25rem;line-height:1.25}' +
+      '.ke-karte p{margin:0 0 10px}' +
+      '.ke-reihe{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}' +
+      '.ke-knopf{flex:1 1 160px;font:inherit;font-weight:700;padding:10px 14px;border:3px solid #2A2138;border-radius:12px;cursor:pointer;color:#2A2138}' +
+      '.ke-ja{background:#BFEBD8}.ke-nein{background:#F7E08A}' +
+      '.ke-knopf:focus-visible,.ke-link:focus-visible{outline:3px dashed #D94F5C;outline-offset:3px}.ke-karte:focus{outline:none}' +
+      '.ke-link{color:#5A4A9E;font-weight:700}' +
+      '.ke-klein{font-size:.85rem;color:#5B5070}';
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  /* Fragt einmal, solange nicht eingewilligt wurde; beiJa() läuft nach „Ja, merken“ */
+  function frage(name, beiJa) {
+    if (zustand !== null) return;
+    var los = function () {
+      if (zustand !== null || document.querySelector('.ke-hg')) return;
+      stil();
+      var vorher = document.activeElement;
+      var hg = document.createElement('div');
+      hg.className = 'ke-hg';
+      hg.innerHTML =
+        '<div class="ke-karte" role="dialog" aria-modal="true" aria-labelledby="ke-titel" aria-describedby="ke-text" tabindex="-1">' +
+        '<h2 id="ke-titel">Eine Frage an die Erwachsenen</h2>' +
+        '<p id="ke-text"></p>' +
+        '<p>Die Angaben bleiben im Browser dieses Geräts und gelten für alle Spiele der Sprachdetektei. Es werden keine Cookies gesetzt, keine Namen gespeichert und keine Daten übertragen. Ändern lässt sich das jederzeit unter „Für Lehrkräfte“.</p>' +
+        '<div class="ke-reihe"><button type="button" class="ke-knopf ke-ja">Ja, merken</button><button type="button" class="ke-knopf ke-nein">Nein, nichts speichern</button></div>' +
+        '<p class="ke-klein">Ohne Speichern funktioniert alles, der Stand ist aber nach dem Schließen weg. <a class="ke-link" href="' + DATENSCHUTZ + '" target="_blank" rel="noopener">Datenschutzerklärung lesen</a></p>' +
+        '</div>';
+      hg.querySelector('#ke-text').textContent = 'Darf „' + name + '“ auf diesem Gerät merken, wie weit gespielt wurde (Fortschritt, Sticker und Einstellungen)?';
+      var zu = function (ja) {
+        if (hg.parentNode) hg.parentNode.removeChild(hg);
+        setze(ja);
+        if (ja && typeof beiJa === 'function') { try { beiJa(); } catch (e) {} }
+        if (vorher && vorher.focus && document.contains(vorher)) { try { vorher.focus(); } catch (e) {} }
+      };
+      hg.querySelector('.ke-ja').addEventListener('click', function () { zu(true); });
+      hg.querySelector('.ke-nein').addEventListener('click', function () { zu(false); });
+      /* Tab bleibt im Fenster */
+      hg.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var f = hg.querySelectorAll('button,a');
+        var erst = f[0], letzt = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === erst) { e.preventDefault(); letzt.focus(); }
+        else if (!e.shiftKey && document.activeElement === letzt) { e.preventDefault(); erst.focus(); }
+      });
+      document.body.appendChild(hg);
+      hg.querySelector('.ke-karte').focus();
+    };
+    if (document.body) los(); else document.addEventListener('DOMContentLoaded', los);
+  }
+
+  window.KommaSpeicher = {
+    darf: function () { return zustand === true; },
+    gefragt: function () { return zustand !== null; },
+    setze: setze,
+    frage: frage,
+    beiAenderung: function (fn) { hoerer.push(fn); },
+    TEXT_AN: 'Merken',
+    TEXT_AUS: 'Nicht merken',
+    TITEL: 'Auf diesem Gerät merken'
+  };
+})();
+/* EINWILLIGUNG ENDE */
+</script>
+<!-- /EINWILLIGUNG -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Die vier Fälle (Nominativ, Genitiv, Dativ, Akkusativ) mit Fragen bestimmen und über den Teich springen.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xIC0xIDEyIDEyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPgogIDxyZWN0IHg9Ii0xIiB5PSItMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZGNERFIi8+CiAgPHBhdGggZmlsbD0iI0U4QTM1QyIgZD0iTTAgMGgxdjFoLTF6TTkgMGgxdjFoLTF6TTAgMWgydjFoLTJ6TTggMWgydjFoLTJ6TTAgMmgxdjFoLTF6TTIgMmgxdjFoLTF6TTcgMmgxdjFoLTF6TTkgMmgxdjFoLTF6TTAgM2gxMHYxaC0xMHpNMCA0aDEwdjFoLTEwek0wIDVoMnYxaC0yek00IDVoMnYxaC0yek04IDVoMnYxaC0yek0wIDZoMnYxaC0yek0zIDZoM3YxaC0zek03IDZoM3YxaC0zek0wIDdoNHYxaC00ek02IDdoNHYxaC00ek0xIDhoOHYxaC04ek0yIDloNnYxaC02eiIvPgogIDxwYXRoIGZpbGw9IiNDNDdBM0EiIGQ9Ik00IDNoMnYxaC0yek0wIDRoMXYxaC0xek05IDRoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiNGNEE2QjgiIGQ9Ik0xIDJoMXYxaC0xek04IDJoMXYxaC0xek00IDdoMnYxaC0yeiIvPgogIDxwYXRoIGZpbGw9IiM2Q0MwN0EiIGQ9Ik0yIDVoMnYxaC0yek02IDVoMnYxaC0yek0yIDZoMXYxaC0xek02IDZoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiMyQTIxMzgiIGQ9Ik0zIDZoMXYxaC0xek03IDZoMXYxaC0xeiIvPgo8L3N2Zz4=">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Der Kasus-Teich</title>
+<title>Der Kasus-Teich – Komma ermittelt</title>
 <script>
 /* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
 try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
@@ -162,6 +284,8 @@ pre{padding:calc(2*var(--p)) calc(3*var(--p));margin:calc(3*var(--p)) var(--p);w
 .eingebettet .nur-allein{display:none!important}
 .rechtslinks{display:flex;justify-content:center;gap:18px;flex-wrap:wrap}
 .rechtslinks a{color:inherit;text-underline-offset:3px}
+/* Bewegung reduzieren: CSS-Übergänge und -Animationen aus (das Springen auf dem Teich bleibt, es gehört zum Spiel) */
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
 </style>
 </head>
 <body>
@@ -176,7 +300,7 @@ pre{padding:calc(2*var(--p)) calc(3*var(--p));margin:calc(3*var(--p)) var(--p);w
     <button class="pb ib" id="bMusic" aria-label="Musik an oder aus" title="Musik"></button>
     <button class="pb ib" id="bFull" aria-label="Vollbild" title="Vollbild (F)"></button>
     <button class="pb ib" id="bMenu" aria-label="Spielmenü" title="Spielmenü"></button>
-    <button class="pb ib" id="bGear" aria-label="Lehrkraft-Bereich (2 Sekunden gedrückt halten)" title="Lehrkraft-Bereich: 2 Sekunden gedrückt halten"></button>
+    <button class="pb ib" id="bGear" aria-label="Für Lehrkräfte (2 Sekunden gedrückt halten)" title="Für Lehrkräfte: 2 Sekunden gedrückt halten"></button>
   </header>
   <section id="card" aria-live="polite">
     <div id="sent"><div></div></div>
@@ -512,16 +636,17 @@ function fmtQ(q) {
 }
 
 // =========================================================
-// Lokaler Speicher (nur Sticker, Zähler, Einstellungen, eigene Sätze – keine Namen)
+// Lokaler Speicher (nur Sticker, Zähler, Einstellungen, eigene Sätze – keine Namen), nur mit Einwilligung (KommaSpeicher)
 // =========================================================
 const STORE_KEY = 'kasusteich.v1';
-function loadStore() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { return {}; } }
+function loadStore() { if (!KommaSpeicher.darf()) return {}; try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}') || {}; } catch (e) { return {}; } }
 const saved = loadStore();
+KommaSpeicher.frage('Der Kasus-Teich', () => persist());
 saved.stickers = saved.stickers || {};
 saved.count = Object.assign({ Nom: 0, Gen: 0, Dat: 0, Akk: 0, frage: 0, hilfe: 0, balls: 0, mut: 0 }, saved.count || {});
-saved.settings = Object.assign({ mode: 'normal', teams: 1, ext: true, tempo: false, perBall: 5, source: 'builtin', music: true, sfx: true, startLevel: 1 }, saved.settings || {});
+saved.settings = Object.assign({ mode: 'normal', teams: 1, ext: true, tempo: false, perBall: 5, source: 'builtin', music: false, sfx: true, startLevel: 1 }, saved.settings || {});
 saved.custom = typeof saved.custom === 'string' ? saved.custom : '';
-function persist() { try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch (e) { /* ohne Speicher geht es auch */ } }
+function persist() { if (!KommaSpeicher.darf()) return; try { localStorage.setItem(STORE_KEY, JSON.stringify(saved)); } catch (e) { /* ohne Speicher geht es auch */ } }
 const SET = saved.settings;
 
 // =========================================================
@@ -1107,7 +1232,7 @@ function newGame() {
 function nextSentence(switchTeam) {
   if (switchTeam && G.teams === 2) G.turn = 1 - G.turn;
   const s = chooseSentence();
-  if (!s) { toast('Für dieses Level gibt es keine passenden Sätze. Bitte im Lehrkraft-Bereich Sätze ergänzen oder die Satzquelle ändern.'); demoRows(); return; }
+  if (!s) { toast('Für dieses Level gibt es keine passenden Sätze. Bitte unter „Für Lehrkräfte“ Sätze ergänzen oder die Satzquelle ändern.'); demoRows(); return; }
   hideProbeCard();
   G.sent = s; G.done = {}; G.qDone = {}; G.crossErr = 0; G.ri = -1;
   G.rows = buildRows(s, G.level, SET.ext).map((r, i) => Object.assign(r, { state: 'future', dir: i % 2 ? -1 : 1, beltOff: rnd(0, 600), phase: rnd(0, 6) }));
@@ -1982,7 +2107,7 @@ function showStart() {
     <div style="margin-top:calc(4*var(--p))">${running ? '<button class="pb" id="bCont">Weiterspielen</button>' : ''}<button class="pb ${running ? 'alt' : 'gold'}" id="bGo">${running ? 'Neues Spiel' : 'Los geht’s!'}</button></div>
     <div><button class="pb alt sm" id="bHow">So geht’s</button><button class="pb alt sm" id="bAlb2">Stickeralbum</button><button class="pb alt sm" id="bFull2"></button></div>
     <p class="small">Bestwert heute: <b>${G.best}</b> Punkte · Für Lehrkräfte: Zahnrad oben rechts 2 Sekunden gedrückt halten.</p>
-    <p class="small rechtslinks nur-allein"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>`;
+    <p class="small rechtslinks nur-allein"><a href="https://www.kommakatze.de/" target="_blank" rel="noopener">Zur Detektei</a> <a href="https://www.kommakatze.de/impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="https://www.kommakatze.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="https://www.kommakatze.de/lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>`;
   const body = $('#startBody');
   pixTitle($('#tStart'), 'Der Kasus-Teich', { k: window.innerWidth > 760 ? 4 : 3, size: 12, fill: '#FBE38E', outline: '#5E4BA8', shadow: '#B9A6E0' });
   bindSegs(body, (k) => { applySetting(k); if (k === 'teams' && running) $('#teamNote').style.display = ''; });
@@ -2124,6 +2249,7 @@ function showTeacher(tab) {
       <div>Spieler</div>${segHTML('teams', [[1, 'Ein Frosch'], [2, 'Zwei Teams']], SET.teams)}
       <div>Musik</div>${segHTML('music', [[true, 'An'], [false, 'Aus']], SET.music)}
       <div>Geräusche</div>${segHTML('sfx', [[true, 'An'], [false, 'Aus']], SET.sfx)}
+      <div>${KommaSpeicher.TITEL}</div><div class="seg pf flat" id="segMerken"><button data-m="1" class="${KommaSpeicher.darf() ? 'on' : ''}">${KommaSpeicher.TEXT_AN}</button><button data-m="0" class="${KommaSpeicher.darf() ? '' : 'on'}">${KommaSpeicher.TEXT_AUS}</button></div>
     </div>
     <div class="btnrow" style="margin-top:calc(4*var(--p))"><button class="pb sm" id="tNew">Neues Spiel mit diesen Einstellungen</button><button class="pb alt sm" id="tFull"></button><button class="pb alt sm" id="tAlbumReset">Stickeralbum leeren</button></div>
     <p class="small">Start-Level und Spieler gelten ab dem nächsten neuen Spiel. Alles andere gilt sofort bzw. ab dem nächsten Satz.</p>`;
@@ -2133,6 +2259,7 @@ function showTeacher(tab) {
 Der Frosch sitzt auf [dem Tisch]{Dat: Worauf sitzt der Frosch?}.
 Wegen [des Regens]{Gen: Weswegen bleibt die Prinzessin im Schloss?} bleibt die Prinzessin im Schloss.</pre>
     <p class="small">Kürzel: Nom, Gen, Dat, Akk. Bei mehreren Gruppen fragt das Spiel sie nacheinander ab, eine Reihe pro Gruppe. Bei Präpositionen gehört die Präposition in die Frage (<b>Worauf</b> …? / <b>Auf wen</b> …? / <b>Weswegen</b> …? / <b>Trotz wessen</b> …?). Daraus macht das Spiel die Fragen „Auf wem oder was …?“, „Auf wen oder was …?“ bzw. „Wegen wessen …?“. Zeilen mit # sind Überschriften. Die Falschantworten wählt das Spiel selbst.</p>
+    <p class="small"><b>Datenschutz:</b> Bitte keine echten Namen oder andere Angaben über Kinder in die Sätze schreiben.</p>
     <textarea id="ed" class="pf flat" spellcheck="false" placeholder="Hier eigene Sätze eintragen …"></textarea>
     <div class="btnrow"><button class="pb sm" id="edApply">Übernehmen</button><button class="pb alt sm" id="edImport">Importieren (.md)</button><button class="pb alt sm" id="edExport">Exportieren (.md)</button><button class="pb alt sm" id="edBuiltin">Eingebaute Sätze einfügen</button><button class="pb alt sm" id="edClear">Leeren</button></div>
     <div class="sum pf flat soft" id="edSum"></div><ul class="check" id="edCheck"></ul>`;
@@ -2143,16 +2270,24 @@ Wegen [des Regens]{Gen: Weswegen bleibt die Prinzessin im Schloss?} bleibt die P
     <h3>Wertung</h3><p>Richtiger Sprung: 10 Punkte × Anzahl der freigeschalteten Fälle. Überquerung ohne Platsch: Serien-Bonus (20, 40, 60 … bis 100). Tempobonus nur, wenn eingeschaltet. Der Bestwert gilt nur für diese Sitzung.</p>
     <h3>Teammodus</h3><p>Zwei Teams wechseln sich pro Satz ab, jedes mit eigenem Frosch und eigenem Punktestand. Die goldenen Kugeln sammeln beide gemeinsam.</p>
     <h3>Vollbild</h3><p>Knopf oben rechts (vier Ecken), im Startmenü oder Taste F. Mit Esc oder demselben Knopf zurück. Auf dem iPhone gibt es kein Vollbild im Browser; dort hilft „Zum Home-Bildschirm“.</p>
-    <h3>Datenschutz</h3><p>Gespeichert werden auf diesem Gerät nur Sticker, Zähler, Einstellungen und eigene Sätze. Keine Namen. Die Auswertung gilt nur für die laufende Sitzung. Das Spiel funktioniert ohne Internet.</p>
-    <h3>Steuerung</h3><p>Tippen oder Klicken auf ein Blatt. Wischen: links/rechts wählen, nach oben springen. Tastatur: Pfeiltasten, Leertaste/Enter, 1–4, H für einen Tipp, F für Vollbild.</p>`;
+    <h3>Datenschutz</h3><p>Nur mit Einwilligung werden auf diesem Gerät Sticker, Zähler, Einstellungen und eigene Sätze gespeichert (Einstellungen → „Auf diesem Gerät merken“). Keine Namen. Die Auswertung gilt nur für die laufende Sitzung. Das Spiel funktioniert ohne Internet.</p>
+    <h3>Steuerung</h3><p>Tippen oder Klicken auf ein Blatt. Wischen: links/rechts wählen, nach oben springen. Tastatur: Pfeiltasten, Leertaste/Enter, 1–4, H für einen Tipp, F für Vollbild.</p>
+    <h3>Über dieses Spiel</h3><p>„Der Kasus-Teich“ von Sebastian Wolf · Lizenz CC BY-SA 4.0 · Stand: Oktober 2026. Programmiert mit Unterstützung von KI (Claude, Anthropic). Idee, Inhalte und fachliche Prüfung: Sebastian Wolf. Lizenzen und Schriften: www.kommakatze.de/lizenzen.html</p>`;
   $('#teacherBody').innerHTML = `<div style="display:flex;align-items:center;gap:10px;justify-content:space-between;flex-wrap:wrap">${titleHTML('tTeach')}<button class="pb alt sm" id="tClose">Schließen</button></div>
     <div class="tabs">${tabs.map(([k, l]) => `<button data-tab="${k}" class="pb sm ${k === tab ? '' : 'alt'}">${l}</button>`).join('')}</div>${body}`;
   const root = $('#teacherBody');
-  const tt = $('#tTeach'); tt.style.margin = '0'; pixTitle(tt, 'Lehrkraft-Bereich');
+  const tt = $('#tTeach'); tt.style.margin = '0'; pixTitle(tt, 'Für Lehrkräfte');
   root.querySelectorAll('.tabs button').forEach(b => b.onclick = () => showTeacher(b.dataset.tab));
   $('#tClose').onclick = () => { hide('ovTeacher'); renderTask(); };
   if (tab === 'set') {
     bindSegs(root, k => applySetting(k));
+    $('#segMerken').addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      const ja = b.dataset.m === '1';
+      $('#segMerken').querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+      KommaSpeicher.setze(ja); if (ja) persist(); SND.play('tap');
+      toast(ja ? 'Sticker, Einstellungen und eigene Sätze werden auf diesem Gerät gemerkt.' : 'Alle Spielstände auf diesem Gerät sind gelöscht.', 4);
+    });
     $('#tNew').onclick = () => { hide('ovTeacher'); closeBubble(); newGame(); };
     const tf = $('#tFull'); tf.appendChild(iconCv('full')); tf.lastChild.classList.add('ic'); tf.appendChild(document.createTextNode('Vollbild')); tf.onclick = () => FS.toggle();
     if (!FS.can()) tf.style.display = 'none';
@@ -2250,7 +2385,7 @@ $('#bubMore').onclick = e => { e.stopPropagation(); openHint(false); };
 $('#bubOk').onclick = e => { e.stopPropagation(); closeBubble(); };
 (function gearHold() {
   const b = $('#bGear'); let tm = null;
-  const cancel = (ev) => { if (tm) { clearTimeout(tm); tm = null; b.classList.remove('hold'); if (ev.type === 'pointerup') toast('Lehrkraft-Bereich: Zahnrad 2 Sekunden gedrückt halten.'); } };
+  const cancel = (ev) => { if (tm) { clearTimeout(tm); tm = null; b.classList.remove('hold'); if (ev.type === 'pointerup') toast('Für Lehrkräfte: Zahnrad 2 Sekunden gedrückt halten.'); } };
   b.addEventListener('pointerdown', e => { e.preventDefault(); b.classList.remove('hold'); void b.offsetWidth; b.classList.add('hold'); tm = setTimeout(() => { tm = null; b.classList.remove('hold'); closeBubble(); showTeacher('set'); }, 1600); });
   ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, cancel));
   b.addEventListener('contextmenu', e => e.preventDefault());

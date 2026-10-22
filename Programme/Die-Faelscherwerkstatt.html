@@ -2,15 +2,133 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<!-- EINWILLIGUNG -->
+<script>
+/* EINWILLIGUNG v1 – Speichern auf diesem Gerät nur mit Einwilligung (wie Silbenexpress und Kommas Zählrahmen)
+   Quelle: assets/js/einwilligung.js. Dieser Block steckt wortgleich in jedem Spiel, das etwas speichert,
+   damit die Spiele auch einzeln und offline laufen. Nach einer Änderung hier: python3 werkzeuge/einwilligung_einbauen.py
+
+   - Beim ersten Start fragt ein Fenster „Eine Frage an die Erwachsenen“.
+   - „Ja, merken“: Die Einwilligung (kommas-einwilligung-v1) gilt für alle Spiele dieser Website.
+   - „Nein, nichts speichern“: Es wird nichts gespeichert, auch nicht die Antwort. Beim nächsten Start fragt das Spiel erneut.
+   - Widerruf unter „Für Lehrkräfte“ → „Auf diesem Gerät merken: Nicht merken“: Alle Spielstände dieser Website werden gelöscht.
+   Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG.
+
+   Für das Spiel: KommaSpeicher.darf() vor jedem Lesen und Schreiben prüfen;
+   KommaSpeicher.frage(name, beiJa) einmal beim Start aufrufen;
+   KommaSpeicher.setze(true|false) für den Schalter im Lehrkräfte-Menü; KommaSpeicher.beiAenderung(fn). */
+(function () {
+  'use strict';
+  if (window.KommaSpeicher) return;
+  var SCHLUESSEL = 'kommas-einwilligung-v1';
+  /* Alle Speicherstände der Sprachdetektei: werden beim Widerruf gelöscht */
+  var PRAEFIXE = ['kommas-einwilligung', 'abteil7', 'kasusteich', 'zeitfaden', 'wortwurfbude', 'faelscherwerkstatt'];
+  var DATENSCHUTZ = 'https://www.kommakatze.de/datenschutz.html';
+  var zustand = null;          /* true = ja, false = nein (nur für diesen Aufruf), null = noch nicht gefragt */
+  var hoerer = [];
+
+  function lies() { try { return localStorage.getItem(SCHLUESSEL) === 'ja'; } catch (e) { return false; } }
+  if (lies()) zustand = true;
+
+  function loescheAlles() {
+    try {
+      var weg = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i) || '';
+        if (PRAEFIXE.some(function (p) { return k.indexOf(p) === 0; })) weg.push(k);
+      }
+      weg.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) { /* ohne Speicher gibt es nichts zu löschen */ }
+  }
+
+  function setze(ja) {
+    zustand = !!ja;
+    if (ja) { try { localStorage.setItem(SCHLUESSEL, 'ja'); } catch (e) {} }
+    else loescheAlles();
+    hoerer.forEach(function (fn) { try { fn(zustand); } catch (e) {} });
+  }
+
+  function stil() {
+    if (document.getElementById('komma-einwilligung-stil')) return;
+    var s = document.createElement('style');
+    s.id = 'komma-einwilligung-stil';
+    s.textContent =
+      '.ke-hg{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(30,20,40,.6)}' +
+      '.ke-karte{max-width:460px;width:100%;max-height:calc(100% - 32px);overflow:auto;background:#FFFDF6;color:#2A2138;border:4px solid #2A2138;border-radius:18px;box-shadow:6px 6px 0 #2A2138;padding:20px 22px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left}' +
+      '.ke-karte h2{margin:0 0 8px;font-size:1.25rem;line-height:1.25}' +
+      '.ke-karte p{margin:0 0 10px}' +
+      '.ke-reihe{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}' +
+      '.ke-knopf{flex:1 1 160px;font:inherit;font-weight:700;padding:10px 14px;border:3px solid #2A2138;border-radius:12px;cursor:pointer;color:#2A2138}' +
+      '.ke-ja{background:#BFEBD8}.ke-nein{background:#F7E08A}' +
+      '.ke-knopf:focus-visible,.ke-link:focus-visible{outline:3px dashed #D94F5C;outline-offset:3px}.ke-karte:focus{outline:none}' +
+      '.ke-link{color:#5A4A9E;font-weight:700}' +
+      '.ke-klein{font-size:.85rem;color:#5B5070}';
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  /* Fragt einmal, solange nicht eingewilligt wurde; beiJa() läuft nach „Ja, merken“ */
+  function frage(name, beiJa) {
+    if (zustand !== null) return;
+    var los = function () {
+      if (zustand !== null || document.querySelector('.ke-hg')) return;
+      stil();
+      var vorher = document.activeElement;
+      var hg = document.createElement('div');
+      hg.className = 'ke-hg';
+      hg.innerHTML =
+        '<div class="ke-karte" role="dialog" aria-modal="true" aria-labelledby="ke-titel" aria-describedby="ke-text" tabindex="-1">' +
+        '<h2 id="ke-titel">Eine Frage an die Erwachsenen</h2>' +
+        '<p id="ke-text"></p>' +
+        '<p>Die Angaben bleiben im Browser dieses Geräts und gelten für alle Spiele der Sprachdetektei. Es werden keine Cookies gesetzt, keine Namen gespeichert und keine Daten übertragen. Ändern lässt sich das jederzeit unter „Für Lehrkräfte“.</p>' +
+        '<div class="ke-reihe"><button type="button" class="ke-knopf ke-ja">Ja, merken</button><button type="button" class="ke-knopf ke-nein">Nein, nichts speichern</button></div>' +
+        '<p class="ke-klein">Ohne Speichern funktioniert alles, der Stand ist aber nach dem Schließen weg. <a class="ke-link" href="' + DATENSCHUTZ + '" target="_blank" rel="noopener">Datenschutzerklärung lesen</a></p>' +
+        '</div>';
+      hg.querySelector('#ke-text').textContent = 'Darf „' + name + '“ auf diesem Gerät merken, wie weit gespielt wurde (Fortschritt, Sticker und Einstellungen)?';
+      var zu = function (ja) {
+        if (hg.parentNode) hg.parentNode.removeChild(hg);
+        setze(ja);
+        if (ja && typeof beiJa === 'function') { try { beiJa(); } catch (e) {} }
+        if (vorher && vorher.focus && document.contains(vorher)) { try { vorher.focus(); } catch (e) {} }
+      };
+      hg.querySelector('.ke-ja').addEventListener('click', function () { zu(true); });
+      hg.querySelector('.ke-nein').addEventListener('click', function () { zu(false); });
+      /* Tab bleibt im Fenster */
+      hg.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var f = hg.querySelectorAll('button,a');
+        var erst = f[0], letzt = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === erst) { e.preventDefault(); letzt.focus(); }
+        else if (!e.shiftKey && document.activeElement === letzt) { e.preventDefault(); erst.focus(); }
+      });
+      document.body.appendChild(hg);
+      hg.querySelector('.ke-karte').focus();
+    };
+    if (document.body) los(); else document.addEventListener('DOMContentLoaded', los);
+  }
+
+  window.KommaSpeicher = {
+    darf: function () { return zustand === true; },
+    gefragt: function () { return zustand !== null; },
+    setze: setze,
+    frage: frage,
+    beiAenderung: function (fn) { hoerer.push(fn); },
+    TEXT_AN: 'Merken',
+    TEXT_AUS: 'Nicht merken',
+    TITEL: 'Auf diesem Gerät merken'
+  };
+})();
+/* EINWILLIGUNG ENDE */
+</script>
+<!-- /EINWILLIGUNG -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xIC0xIDEyIDEyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPgogIDxyZWN0IHg9Ii0xIiB5PSItMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZGNERFIi8+CiAgPHBhdGggZmlsbD0iI0U4QTM1QyIgZD0iTTAgMGgxdjFoLTF6TTkgMGgxdjFoLTF6TTAgMWgydjFoLTJ6TTggMWgydjFoLTJ6TTAgMmgxdjFoLTF6TTIgMmgxdjFoLTF6TTcgMmgxdjFoLTF6TTkgMmgxdjFoLTF6TTAgM2gxMHYxaC0xMHpNMCA0aDEwdjFoLTEwek0wIDVoMnYxaC0yek00IDVoMnYxaC0yek04IDVoMnYxaC0yek0wIDZoMnYxaC0yek0zIDZoM3YxaC0zek03IDZoM3YxaC0zek0wIDdoNHYxaC00ek02IDdoNHYxaC00ek0xIDhoOHYxaC04ek0yIDloNnYxaC02eiIvPgogIDxwYXRoIGZpbGw9IiNDNDdBM0EiIGQ9Ik00IDNoMnYxaC0yek0wIDRoMXYxaC0xek05IDRoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiNGNEE2QjgiIGQ9Ik0xIDJoMXYxaC0xek04IDJoMXYxaC0xek00IDdoMnYxaC0yeiIvPgogIDxwYXRoIGZpbGw9IiM2Q0MwN0EiIGQ9Ik0yIDVoMnYxaC0yek02IDVoMnYxaC0yek0yIDZoMXYxaC0xek02IDZoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiMyQTIxMzgiIGQ9Ik0zIDZoMXYxaC0xek03IDZoMXYxaC0xeiIvPgo8L3N2Zz4=">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; font-src data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
-<title>Die Fälscherwerkstatt</title>
+<title>Die Fälscherwerkstatt – Komma ermittelt</title>
 <script>
 /* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
 try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
 </script>
-<meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="Komma ermittelt: Ein ruhiges Pixel-Detektivspiel zu den Kommaregeln. Gefälschte Dokumente prüfen, Fälschungen beweisen, Originale wiederherstellen (Amtliches Regelwerk 2024).">
 <style>
 html { box-sizing: border-box; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
@@ -439,7 +557,7 @@ input.codein { font: inherit; letter-spacing: 2px; background: var(--ink0); colo
       <button class="btn" id="bMenu" type="button" aria-label="Alle Fälle" title="Alle Fälle"><svg class="ico pix" viewBox="0 0 10 10" aria-hidden="true" fill="currentColor"><rect x="0" y="1" width="4" height="1"/><rect x="0" y="2" width="10" height="7"/><rect x="1" y="3" width="8" height="5" fill="#2a2140"/><rect x="2" y="4" width="6" height="1"/><rect x="2" y="6" width="4" height="1"/></svg><span>Fälle</span></button>
       <button class="btn" id="bBook" type="button" aria-label="Kommabuch" title="Kommabuch"><svg class="ico pix" viewBox="0 0 10 10" aria-hidden="true"><rect x="0" y="1" width="10" height="8" fill="#7fd6c2"/><rect x="1" y="2" width="3" height="6" fill="#fff1d6"/><rect x="6" y="2" width="3" height="6" fill="#fff1d6"/><rect x="4" y="1" width="2" height="8" fill="#3d7a6e"/><rect x="2" y="3" width="1" height="1" fill="#2a2233"/><rect x="2" y="5" width="1" height="1" fill="#2a2233"/><rect x="7" y="3" width="1" height="1" fill="#2a2233"/></svg><span class="lw">Buch</span><span class="dot" id="bookDot" hidden></span></button>
       <button class="btn" id="bAlbum" type="button" aria-label="Sticker" title="Sticker"><svg class="ico pix" viewBox="0 0 10 10" aria-hidden="true"><rect x="1" y="1" width="8" height="8" fill="#c96f6f"/><rect x="1" y="1" width="2" height="8" fill="#8a3f3f"/><rect x="4" y="3" width="4" height="3" fill="#f6d36b"/></svg><span id="albumCount">0/24</span></button>
-      <button class="btn icon" id="bSound" type="button" aria-label="Ton ausschalten" title="Ton"><svg class="ico pix" viewBox="0 0 10 10" aria-hidden="true" fill="currentColor"><rect x="0" y="3" width="3" height="4"/><rect x="3" y="2" width="1" height="6"/><rect x="4" y="1" width="1" height="8"/><g id="soundWaves"><rect x="6" y="3" width="1" height="4"/><rect x="8" y="1" width="1" height="8"/></g><g id="soundOff" style="display:none"><rect x="6" y="3" width="1" height="1"/><rect x="7" y="4" width="1" height="2"/><rect x="8" y="6" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/></g></svg></button>
+      <button class="btn icon" id="bSound" type="button" aria-label="Musik einschalten" title="Musik"><svg class="ico pix" viewBox="0 0 10 10" aria-hidden="true" fill="currentColor"><rect x="0" y="3" width="3" height="4"/><rect x="3" y="2" width="1" height="6"/><rect x="4" y="1" width="1" height="8"/><g id="soundWaves"><rect x="6" y="3" width="1" height="4"/><rect x="8" y="1" width="1" height="8"/></g><g id="soundOff" style="display:none"><rect x="6" y="3" width="1" height="1"/><rect x="7" y="4" width="1" height="2"/><rect x="8" y="6" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/></g></svg></button>
       <button class="btn icon" id="bFull" type="button" aria-label="Vollbild" title="Vollbild"><svg class="ico pix" viewBox="0 0 10 10" aria-hidden="true" fill="currentColor"><rect x="0" y="0" width="4" height="1"/><rect x="0" y="0" width="1" height="4"/><rect x="6" y="0" width="4" height="1"/><rect x="9" y="0" width="1" height="4"/><rect x="0" y="9" width="4" height="1"/><rect x="0" y="6" width="1" height="4"/><rect x="6" y="9" width="4" height="1"/><rect x="9" y="6" width="1" height="4"/></svg></button>
     </div>
   </header>
@@ -1509,7 +1627,7 @@ const PQS = ['reihung', 'gegensatz', 'nebensatz', 'infinitiv', 'zusatz', 'kein']
 const pqName = id => Core.PQ[id].name.replace(/\u00AD/g, '');
 
 const S = {
-  settings: { music: true, sfx: true, calm: reduceMQ.matches, quietRead: false, showCount: false, quickHints: false, kann: false, allOpen: false, heft: false, save: false, tips: [] },
+  settings: { music: false, sfx: true, calm: reduceMQ.matches, quietRead: false, showCount: false, quickHints: false, kann: false, allOpen: false, heft: false, save: false, tips: [] },
   prog: { d: [0, 0, 0, 0, 0, 0, 0], st: 0, intro: false },
   stats: newStats(),
   mode: 'title', c: -1, di: 0, D: null, line: 0, sel: null, step: 'spot', pq: null, stampTries: 0,
@@ -1517,19 +1635,21 @@ const S = {
   partner: null, bookSeen: null, tut: null, train: null
 };
 
-/* ---------- Speichern (nur nach Einschalten) ---------- */
+/* ---------- Speichern: nur mit Einwilligung (KommaSpeicher, siehe Kopf der Datei); S.settings.save spiegelt sie ---------- */
 function persist() {
-  if (!S.settings.save) return;
+  if (!KommaSpeicher.darf()) return;
   try { localStorage.setItem(STORE, JSON.stringify({ prog: S.prog, settings: S.settings, stats: S.stats })); } catch (e) { }
 }
 function clearStore() { try { localStorage.removeItem(STORE); } catch (e) { } }
 function loadStore() {
+  S.settings.save = KommaSpeicher.darf();
+  if (!S.settings.save) return;
   try {
     const raw = localStorage.getItem(STORE);
     if (!raw) return;
     const d = JSON.parse(raw);
-    if (d && d.settings && d.settings.save) {
-      Object.assign(S.settings, d.settings);
+    if (d && d.settings) {
+      Object.assign(S.settings, d.settings, { save: true });
       if (d.prog && Array.isArray(d.prog.d)) S.prog = Object.assign(S.prog, d.prog);
       if (Array.isArray(d.stats)) S.stats = newStats().map((s, i) => Object.assign(s, d.stats[i] || {}));
     }
@@ -2316,12 +2436,12 @@ $('bFull').onclick = () => {
    mit eigenem Vollbild-Knopf in der Leiste). Dann gibt es keinen eigenen Vollbild-Knopf. */
 if ((document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen)
     && !(document.fullscreenEnabled || document.webkitFullscreenEnabled)) $('bFull').hidden = true;
-$('bSound').onclick = () => { const on = !(S.settings.music || S.settings.sfx); S.settings.music = on; S.settings.sfx = on; applySound(); persist(); };
+$('bSound').onclick = () => { S.settings.music = !S.settings.music; wakeSound(); applySound(); persist(); };
 function applySound() {
   Sound.setMusic(S.settings.music); Sound.setSfx(S.settings.sfx); Sound.setQuietRead(S.settings.quietRead);
-  const on = S.settings.music || S.settings.sfx;
+  const on = S.settings.music;
   $('soundWaves').style.display = on ? '' : 'none'; $('soundOff').style.display = on ? 'none' : '';
-  $('bSound').setAttribute('aria-label', on ? 'Ton ausschalten' : 'Ton einschalten');
+  $('bSound').setAttribute('aria-label', on ? 'Musik ausschalten' : 'Musik einschalten');
 }
 function wakeSound() { if (Sound.init()) { applySound(); if (S.settings.music) Sound.startMusic(); } }
 document.addEventListener('pointerdown', wakeSound, { once: true });
@@ -2333,7 +2453,7 @@ const Coach = (() => {
   root.id = 'coach'; root.hidden = true;
   root.innerHTML = `<div class="co-hole"></div><div class="co-blk"></div><div class="co-blk"></div><div class="co-blk"></div><div class="co-blk"></div>
     <div class="co-bub" role="dialog" aria-labelledby="coTxt"><div class="co-cat" aria-hidden="true"></div><div class="co-main"><p class="co-txt" id="coTxt" aria-live="polite"></p>
-    <div class="co-row"><button type="button" class="linkish co-skip">Anleitung beenden</button><span class="co-n"></span><button type="button" class="btn primary co-next">Weiter</button></div></div></div>`;
+    <div class="co-row"><button type="button" class="linkish co-skip">Rundgang beenden</button><span class="co-n"></span><button type="button" class="btn primary co-next">Weiter</button></div></div></div>`;
   document.body.appendChild(root);
   const hole = root.querySelector('.co-hole'), blk = [...root.querySelectorAll('.co-blk')], bub = root.querySelector('.co-bub');
   const txt = root.querySelector('.co-txt'), nxt = root.querySelector('.co-next'), cnt = root.querySelector('.co-n'), skip = root.querySelector('.co-skip');
@@ -2385,7 +2505,7 @@ const Coach = (() => {
     start(list, cb, opts) {
       steps = list; done = cb || null; root.hidden = false;
       root.querySelector('.co-cat').innerHTML = catSVG(3);
-      skip.textContent = (opts && opts.skip) || 'Anleitung beenden';
+      skip.textContent = (opts && opts.skip) || 'Rundgang beenden';
       show(0); cancelAnimationFrame(raf); raf = requestAnimationFrame(place);
     },
     event(name, data) {
@@ -2494,12 +2614,12 @@ function showTitle() {
     <p>Die Elster hat echte Kommas gestohlen und falsche hineingesetzt. Hilf Katze Komma, die Fälschungen zu finden – und zu beweisen!</p>
     <div class="title-main">
       <button type="button" class="btn primary big" data-primary id="tStart">${started ? 'Weiterspielen' : 'Spielen'}</button>
-      ${started ? '<button type="button" class="btn big" id="tTrain">Kommatraining</button><button type="button" class="btn big" id="tMap">Alle Fälle</button><button type="button" class="btn big" id="tTut">Anleitung</button>' : ''}
+      ${started ? '<button type="button" class="btn big" id="tTrain">Kommatraining</button><button type="button" class="btn big" id="tMap">Alle Fälle</button><button type="button" class="btn big" id="tTut">So geht’s</button>' : ''}
       <button type="button" class="btn big" id="tPartner">Zu zweit</button>
     </div>
     <div class="title-more"><button type="button" class="linkish" id="tBook">Kommabuch</button><button type="button" class="linkish" id="tAlbum">Sticker</button><button type="button" class="linkish" id="tSet">Einstellungen</button><button type="button" class="linkish" id="tInfo">Info</button></div>
-    <p class="small">Mit Musik. Ausschalten: Lautsprecher-Knopf oben rechts.</p>
-    <p class="small rechtslinks nur-allein"><a class="linkish" href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a class="linkish" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a class="linkish" href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>`, { quiet: true, cls: 'title' });
+    <p class="small">Musik gibt es auch. Einschalten: Lautsprecher-Knopf oben rechts.</p>
+    <p class="small rechtslinks nur-allein"><a class="linkish" href="https://www.kommakatze.de/" target="_blank" rel="noopener">Zur Detektei</a> <a class="linkish" href="https://www.kommakatze.de/impressum.html" target="_blank" rel="noopener">Impressum</a> <a class="linkish" href="https://www.kommakatze.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a class="linkish" href="https://www.kommakatze.de/lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>`, { quiet: true, cls: 'title' });
   if (started) { $('tTut').onclick = () => startTutorial(false); $('tMap').onclick = () => showMenu(); $('tTrain').onclick = () => showTraining(); }
   $('tStart').onclick = () => {
     wakeSound();
@@ -2531,7 +2651,7 @@ function showMenu() {
     return `<button type="button" class="file${c === EXTRA ? ' gold' : ''}${done ? ' done' : ''}" data-ch="${c}" ${open ? '' : 'disabled'}><span class="no">${caseLabel(c)}</span><b>${esc(cs.name)}</b>${masche}<span class="st">${st}</span></button>`;
   }).join('');
   openOverlay(`<div class="kicker">Übersicht</div><h2 id="cardTitle">Alle Fälle</h2><div class="files">${files}</div>
-    <div class="row menu-more"><button type="button" class="btn primary" id="mTrain">Kommatraining</button><button type="button" class="btn" id="mTut">Anleitung</button><button type="button" class="btn" id="mBook">Kommabuch</button><button type="button" class="btn" id="mAlbum">Sticker</button>${S.settings.heft ? '<button type="button" class="btn" id="mHeft">Hefter</button>' : ''}<button type="button" class="btn" id="mPartner">Zu zweit</button><button type="button" class="btn" id="mSet">Einstellungen</button><button type="button" class="btn" id="mInfo">Info</button></div>
+    <div class="row menu-more"><button type="button" class="btn primary" id="mTrain">Kommatraining</button><button type="button" class="btn" id="mTut">So geht’s</button><button type="button" class="btn" id="mBook">Kommabuch</button><button type="button" class="btn" id="mAlbum">Sticker</button>${S.settings.heft ? '<button type="button" class="btn" id="mHeft">Hefter</button>' : ''}<button type="button" class="btn" id="mPartner">Zu zweit</button><button type="button" class="btn" id="mSet">Einstellungen</button><button type="button" class="btn" id="mInfo">Info</button></div>
     <div class="row end acts">${inCase ? '<button type="button" class="btn primary" data-primary data-close>Zurück zum Schreibtisch</button>' : '<button type="button" class="btn" id="mTitle">Zum Startbildschirm</button>'}</div>`, { closable: inCase });
   $('mTut').onclick = () => startTutorial(false);
   $('mTrain').onclick = () => showTraining();
@@ -2747,8 +2867,9 @@ function showSettings(confirmReset) {
       ${sw('oKann', 'Extrafall „Goldene Kommas“ sofort öffnen', 'Kann-Kommas: Beide Fassungen sind richtig.', S.settings.kann)}
       ${sw('oOpen', 'Alle Fälle und Buchseiten öffnen', '', S.settings.allOpen)}
     </div></div>
+    <div class="sec"><h3>Über dieses Spiel</h3><p>„Die Fälscherwerkstatt“ von Sebastian Wolf · Lizenz CC BY-SA 4.0 · Stand: Oktober 2026. Programmiert mit Unterstützung von KI (Claude, Anthropic). Idee, Inhalte und fachliche Prüfung: Sebastian Wolf. Lizenzen und Schriften: www.kommakatze.de/lizenzen.html</p></div>
     <div class="sec"><h3>Speichern</h3><div class="set">
-      ${sw('oSave', 'Spielstand auf diesem Gerät speichern', 'Aus: Nichts wird gespeichert. An: Der Spielstand bleibt nur in diesem Browser.', S.settings.save)}
+      ${sw('oSave', KommaSpeicher.TITEL, 'Aus: Nichts wird gespeichert, alle Spielstände der Detektei auf diesem Gerät werden gelöscht. An: Der Spielstand bleibt nur in diesem Browser.', S.settings.save)}
     </div>
       <p><b>Aktenzeichen</b> – dein Code zum Weiterspielen, auch auf einem anderen Gerät. Schreib ihn dir auf!</p>
       <div class="row"><span class="code" id="codeOut">${Core.encode(S.prog)}</span><button type="button" class="btn" id="copyCode">Kopieren</button></div>
@@ -2760,7 +2881,7 @@ function showSettings(confirmReset) {
   bind('oMusic', 'music', applySound); bind('oSfx', 'sfx', applySound); bind('oQuiet', 'quietRead', applySound);
   bind('oCalm', 'calm'); bind('oCount', 'showCount', () => { if (S.D) renderAll(); }); bind('oQuick', 'quickHints'); bind('oHeft', 'heft');
   bind('oKann', 'kann', () => checkBookNews(true)); bind('oOpen', 'allOpen', () => checkBookNews(true));
-  $('oSave').onchange = e => { S.settings.save = e.target.checked; if (S.settings.save) persist(); else clearStore(); };
+  $('oSave').onchange = e => { S.settings.save = e.target.checked; KommaSpeicher.setze(S.settings.save); if (S.settings.save) persist(); };
   $('copyCode').onclick = () => {
     const t = $('codeOut').textContent;
     const fallback = () => { const r = document.createRange(); r.selectNodeContents($('codeOut')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $('codeMsg').textContent = 'Markiert – jetzt kopieren oder abschreiben.'; };
@@ -2783,7 +2904,7 @@ function showSettings(confirmReset) {
 function showInfo() {
   openOverlay(`<div class="kicker">Info</div><h2 id="cardTitle">Über das Spiel</h2>
     <div class="sec"><h3>Regelgrundlage</h3><p>Amtliches Regelwerk der deutschen Rechtschreibung, Fassung 2024, Kapitel „Komma“ (§ 70–73, Abschnitte 2.4 und 2.5). Infinitivgruppen werden seit 2024 verbindlich mit Komma abgetrennt. Alle Regeln stehen im Kommabuch.</p><p class="small">Begriffe im Spiel: Die fünf Kommaregeln heißen wie in den Schulbüchern – Aufzählung, Gegensatz, Nebensatz, Infinitivgruppe (Infinitivkonstruktion) und Zusatz. „Zusatz“ umfasst Einschub, Beisatz (Apposition), Nachtrag, Anrede, Ausruf und Herausstellung. Fachwörter wie Personalform, Einleitewort und Prädikat werden im Kommabuch erklärt.</p></div>
-    <div class="sec"><h3>So wird gespielt</h3><p>Komma prüft ein Dokument Satz für Satz. Jeder Satz erscheint groß in der Lupe. Tippe auf eine verdächtige Lücke, wähle die Kommaregel und belege deinen Verdacht mit einem Beweiswort aus dem Satz. Mit „Nächster Satz“ geht es weiter, nach dem letzten Satz stempelst du: echt oder gefälscht. In Stufe 3 setzt du alle Kommas selbst.</p><div class="row"><button type="button" class="btn" id="iTut">Anleitung starten</button></div><p class="small">Tastatur: Pfeil hoch und runter wechselt den Satz, Pfeil links und rechts wandert durch die Lupe, die Tasten 1 bis 6 wählen die Regel, Escape bricht ab.</p></div>
+    <div class="sec"><h3>So wird gespielt</h3><p>Komma prüft ein Dokument Satz für Satz. Jeder Satz erscheint groß in der Lupe. Tippe auf eine verdächtige Lücke, wähle die Kommaregel und belege deinen Verdacht mit einem Beweiswort aus dem Satz. Mit „Nächster Satz“ geht es weiter, nach dem letzten Satz stempelst du: echt oder gefälscht. In Stufe 3 setzt du alle Kommas selbst.</p><div class="row"><button type="button" class="btn" id="iTut">Rundgang starten</button></div><p class="small">Tastatur: Pfeil hoch und runter wechselt den Satz, Pfeil links und rechts wandert durch die Lupe, die Tasten 1 bis 6 wählen die Regel, Escape bricht ab.</p></div>
     <div class="row end acts"><button type="button" class="btn" data-close>Schließen</button></div>`, { closable: true });
   $('iTut').onclick = () => startTutorial(false);
   wireClose();
@@ -2793,6 +2914,7 @@ function showInfo() {
 function start(data) {
   document.documentElement.lang = 'de';
   loadStore();
+  KommaSpeicher.frage('Die Fälscherwerkstatt', () => { S.settings.save = true; persist(); });
   if (data && data.prog) S.prog = data.prog;
   if (data && data.settings) Object.assign(S.settings, data.settings);
   if (data && data.stats) S.stats = data.stats;
@@ -2803,8 +2925,7 @@ function start(data) {
   const go = () => { showTitle(); };
   if (document.fonts && document.fonts.load) document.fonts.load("20px 'Komma Pixel'").then(go, go); else go();
 }
-window.claude?.hot?.snapshot?.(() => ({ prog: S.prog, settings: S.settings, stats: S.stats }));
-window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+start({});
 
 </script>
 </body>

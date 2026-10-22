@@ -2,8 +2,130 @@
 <html lang="de">
 <head>
 <meta charset="utf-8">
+<!-- EINWILLIGUNG -->
+<script>
+/* EINWILLIGUNG v1 – Speichern auf diesem Gerät nur mit Einwilligung (wie Silbenexpress und Kommas Zählrahmen)
+   Quelle: assets/js/einwilligung.js. Dieser Block steckt wortgleich in jedem Spiel, das etwas speichert,
+   damit die Spiele auch einzeln und offline laufen. Nach einer Änderung hier: python3 werkzeuge/einwilligung_einbauen.py
+
+   - Beim ersten Start fragt ein Fenster „Eine Frage an die Erwachsenen“.
+   - „Ja, merken“: Die Einwilligung (kommas-einwilligung-v1) gilt für alle Spiele dieser Website.
+   - „Nein, nichts speichern“: Es wird nichts gespeichert, auch nicht die Antwort. Beim nächsten Start fragt das Spiel erneut.
+   - Widerruf unter „Für Lehrkräfte“ → „Auf diesem Gerät merken: Nicht merken“: Alle Spielstände dieser Website werden gelöscht.
+   Rechtsgrundlage: Art. 6 Abs. 1 lit. a DSGVO, § 25 Abs. 1 TDDDG.
+
+   Für das Spiel: KommaSpeicher.darf() vor jedem Lesen und Schreiben prüfen;
+   KommaSpeicher.frage(name, beiJa) einmal beim Start aufrufen;
+   KommaSpeicher.setze(true|false) für den Schalter im Lehrkräfte-Menü; KommaSpeicher.beiAenderung(fn). */
+(function () {
+  'use strict';
+  if (window.KommaSpeicher) return;
+  var SCHLUESSEL = 'kommas-einwilligung-v1';
+  /* Alle Speicherstände der Sprachdetektei: werden beim Widerruf gelöscht */
+  var PRAEFIXE = ['kommas-einwilligung', 'abteil7', 'kasusteich', 'zeitfaden', 'wortwurfbude', 'faelscherwerkstatt'];
+  var DATENSCHUTZ = 'https://www.kommakatze.de/datenschutz.html';
+  var zustand = null;          /* true = ja, false = nein (nur für diesen Aufruf), null = noch nicht gefragt */
+  var hoerer = [];
+
+  function lies() { try { return localStorage.getItem(SCHLUESSEL) === 'ja'; } catch (e) { return false; } }
+  if (lies()) zustand = true;
+
+  function loescheAlles() {
+    try {
+      var weg = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i) || '';
+        if (PRAEFIXE.some(function (p) { return k.indexOf(p) === 0; })) weg.push(k);
+      }
+      weg.forEach(function (k) { localStorage.removeItem(k); });
+    } catch (e) { /* ohne Speicher gibt es nichts zu löschen */ }
+  }
+
+  function setze(ja) {
+    zustand = !!ja;
+    if (ja) { try { localStorage.setItem(SCHLUESSEL, 'ja'); } catch (e) {} }
+    else loescheAlles();
+    hoerer.forEach(function (fn) { try { fn(zustand); } catch (e) {} });
+  }
+
+  function stil() {
+    if (document.getElementById('komma-einwilligung-stil')) return;
+    var s = document.createElement('style');
+    s.id = 'komma-einwilligung-stil';
+    s.textContent =
+      '.ke-hg{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(30,20,40,.6)}' +
+      '.ke-karte{max-width:460px;width:100%;max-height:calc(100% - 32px);overflow:auto;background:#FFFDF6;color:#2A2138;border:4px solid #2A2138;border-radius:18px;box-shadow:6px 6px 0 #2A2138;padding:20px 22px;font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;text-align:left}' +
+      '.ke-karte h2{margin:0 0 8px;font-size:1.25rem;line-height:1.25}' +
+      '.ke-karte p{margin:0 0 10px}' +
+      '.ke-reihe{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 8px}' +
+      '.ke-knopf{flex:1 1 160px;font:inherit;font-weight:700;padding:10px 14px;border:3px solid #2A2138;border-radius:12px;cursor:pointer;color:#2A2138}' +
+      '.ke-ja{background:#BFEBD8}.ke-nein{background:#F7E08A}' +
+      '.ke-knopf:focus-visible,.ke-link:focus-visible{outline:3px dashed #D94F5C;outline-offset:3px}.ke-karte:focus{outline:none}' +
+      '.ke-link{color:#5A4A9E;font-weight:700}' +
+      '.ke-klein{font-size:.85rem;color:#5B5070}';
+    (document.head || document.documentElement).appendChild(s);
+  }
+
+  /* Fragt einmal, solange nicht eingewilligt wurde; beiJa() läuft nach „Ja, merken“ */
+  function frage(name, beiJa) {
+    if (zustand !== null) return;
+    var los = function () {
+      if (zustand !== null || document.querySelector('.ke-hg')) return;
+      stil();
+      var vorher = document.activeElement;
+      var hg = document.createElement('div');
+      hg.className = 'ke-hg';
+      hg.innerHTML =
+        '<div class="ke-karte" role="dialog" aria-modal="true" aria-labelledby="ke-titel" aria-describedby="ke-text" tabindex="-1">' +
+        '<h2 id="ke-titel">Eine Frage an die Erwachsenen</h2>' +
+        '<p id="ke-text"></p>' +
+        '<p>Die Angaben bleiben im Browser dieses Geräts und gelten für alle Spiele der Sprachdetektei. Es werden keine Cookies gesetzt, keine Namen gespeichert und keine Daten übertragen. Ändern lässt sich das jederzeit unter „Für Lehrkräfte“.</p>' +
+        '<div class="ke-reihe"><button type="button" class="ke-knopf ke-ja">Ja, merken</button><button type="button" class="ke-knopf ke-nein">Nein, nichts speichern</button></div>' +
+        '<p class="ke-klein">Ohne Speichern funktioniert alles, der Stand ist aber nach dem Schließen weg. <a class="ke-link" href="' + DATENSCHUTZ + '" target="_blank" rel="noopener">Datenschutzerklärung lesen</a></p>' +
+        '</div>';
+      hg.querySelector('#ke-text').textContent = 'Darf „' + name + '“ auf diesem Gerät merken, wie weit gespielt wurde (Fortschritt, Sticker und Einstellungen)?';
+      var zu = function (ja) {
+        if (hg.parentNode) hg.parentNode.removeChild(hg);
+        setze(ja);
+        if (ja && typeof beiJa === 'function') { try { beiJa(); } catch (e) {} }
+        if (vorher && vorher.focus && document.contains(vorher)) { try { vorher.focus(); } catch (e) {} }
+      };
+      hg.querySelector('.ke-ja').addEventListener('click', function () { zu(true); });
+      hg.querySelector('.ke-nein').addEventListener('click', function () { zu(false); });
+      /* Tab bleibt im Fenster */
+      hg.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var f = hg.querySelectorAll('button,a');
+        var erst = f[0], letzt = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === erst) { e.preventDefault(); letzt.focus(); }
+        else if (!e.shiftKey && document.activeElement === letzt) { e.preventDefault(); erst.focus(); }
+      });
+      document.body.appendChild(hg);
+      hg.querySelector('.ke-karte').focus();
+    };
+    if (document.body) los(); else document.addEventListener('DOMContentLoaded', los);
+  }
+
+  window.KommaSpeicher = {
+    darf: function () { return zustand === true; },
+    gefragt: function () { return zustand !== null; },
+    setze: setze,
+    frage: frage,
+    beiAenderung: function (fn) { hoerer.push(fn); },
+    TEXT_AN: 'Merken',
+    TEXT_AUS: 'Nicht merken',
+    TITEL: 'Auf diesem Gerät merken'
+  };
+})();
+/* EINWILLIGUNG ENDE */
+</script>
+<!-- /EINWILLIGUNG -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; font-src data:; media-src data: blob:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="description" content="Treffsicher Wortarten und grammatische Formen bestimmen – ein Wurfspiel für allein oder in Teams.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xIC0xIDEyIDEyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPgogIDxyZWN0IHg9Ii0xIiB5PSItMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZGNERFIi8+CiAgPHBhdGggZmlsbD0iI0U4QTM1QyIgZD0iTTAgMGgxdjFoLTF6TTkgMGgxdjFoLTF6TTAgMWgydjFoLTJ6TTggMWgydjFoLTJ6TTAgMmgxdjFoLTF6TTIgMmgxdjFoLTF6TTcgMmgxdjFoLTF6TTkgMmgxdjFoLTF6TTAgM2gxMHYxaC0xMHpNMCA0aDEwdjFoLTEwek0wIDVoMnYxaC0yek00IDVoMnYxaC0yek04IDVoMnYxaC0yek0wIDZoMnYxaC0yek0zIDZoM3YxaC0zek03IDZoM3YxaC0zek0wIDdoNHYxaC00ek02IDdoNHYxaC00ek0xIDhoOHYxaC04ek0yIDloNnYxaC02eiIvPgogIDxwYXRoIGZpbGw9IiNDNDdBM0EiIGQ9Ik00IDNoMnYxaC0yek0wIDRoMXYxaC0xek05IDRoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiNGNEE2QjgiIGQ9Ik0xIDJoMXYxaC0xek04IDJoMXYxaC0xek00IDdoMnYxaC0yeiIvPgogIDxwYXRoIGZpbGw9IiM2Q0MwN0EiIGQ9Ik0yIDVoMnYxaC0yek02IDVoMnYxaC0yek0yIDZoMXYxaC0xek02IDZoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiMyQTIxMzgiIGQ9Ik0zIDZoMXYxaC0xek03IDZoMXYxaC0xeiIvPgo8L3N2Zz4=">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Die Wortwurfbude</title>
+<title>Die Wortwurfbude – Komma ermittelt</title>
 <script>
 /* Läuft das Programm in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
 try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
@@ -378,7 +500,7 @@ body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--f-body);o
     <div class="hud-c">
       <button class="teachbtn px2 team-only" id="teachBtn" aria-expanded="false" aria-controls="teachBar">Lehrkraft</button>
       <button class="iconbtn px2 fsbtn" id="fsBtn" type="button" aria-pressed="false" title="Vollbild" hidden><span class="ico" id="fsIco"></span><span class="fslbl" id="fsLbl">Vollbild</span></button>
-      <button class="iconbtn px2" id="musicBtn" aria-pressed="true" aria-label="Musik" title="Musik an/aus"></button>
+      <button class="iconbtn px2" id="musicBtn" aria-pressed="false" aria-label="Musik" title="Musik an/aus"></button>
       <button class="iconbtn px2" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Menü" title="Menü"></button>
     </div>
   </header>
@@ -444,21 +566,21 @@ body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--f-body);o
         <button class="btn" id="teamBtn">Teamspiel</button>
       </div>
       <div class="row tight">
-        <button class="btn ghost" id="helpBtn">So wird gespielt</button>
+        <button class="btn ghost" id="helpBtn">So geht’s</button>
         <button class="btn ghost" id="albumBtn">Stickeralbum <span class="albumCount"></span></button>
         <button class="btn ghost" id="kisteBtn" hidden><span class="ico bagico"></span>Bude schmücken <span id="kisteBtnN">0</span></button>
         <button class="btn ghost" id="fsBtn2" type="button" hidden>Vollbild</button>
       </div>
-      <p class="note"><span id="tRound"></span> Mit Musik – Ton anschalten lohnt sich.</p>
+      <p class="note"><span id="tRound"></span> Mit Musik – Noten-Knopf oben rechts.</p>
       <div class="row teacher"><span class="kicker">Für Lehrkräfte</span><button class="btn ghost" id="setBtn">Wortarten wählen</button><button class="btn ghost" id="editBtn">Sätze bearbeiten</button></div>
-      <p class="note rechtslinks nur-allein"><a href="../impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>
+      <p class="note rechtslinks nur-allein"><a href="https://www.kommakatze.de/" target="_blank" rel="noopener">Zur Detektei</a> <a href="https://www.kommakatze.de/impressum.html" target="_blank" rel="noopener">Impressum</a> <a href="https://www.kommakatze.de/datenschutz.html" target="_blank" rel="noopener">Datenschutz</a> <a href="https://www.kommakatze.de/lizenzen.html" target="_blank" rel="noopener">Lizenzen</a></p>
     </div>
   </section>
 
   <!-- Hilfe -->
   <section class="overlay" id="helpOv" hidden aria-labelledby="hTitle">
     <div class="card px helpcard">
-      <p class="kicker">Spielregeln</p>
+      <p class="kicker">So geht’s</p>
       <h2 id="hTitle">So wird gespielt</h2>
       <ol class="rules">
         <li><span class="n">1</span><span>Wähl unten auf der Theke einen Ball. Jede Farbe gehört zu einer Wortart.</span></li>
@@ -633,9 +755,12 @@ body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--f-body);o
       <p class="hint" id="sPossHint"></p>
       <h3 class="sub-h">Freies Spiel</h3>
       <div class="opt"><span><b>Schmuckkiste:</b> Im freien Spiel ist der Ballkorb immer voll, die Münzen wandern in einen Beutel. Damit schmücken die Kinder nach Feierabend ihre Bude – nur Aussehen, kein Spielvorteil. Gespeichert pro Gerät, ohne Namen.</span><button type="button" class="switch" id="sKiste" aria-pressed="true">an</button></div>
+      <h3 class="sub-h">Auf diesem Gerät merken</h3>
+      <div class="opt"><span><b>Einstellungen, eigene Sätze, Stickeralbum und Bude</b> bleiben nur mit Einwilligung in diesem Browser. „aus“ löscht alle Spielstände der Detektei auf diesem Gerät, sofort und ohne „Übernehmen“.</span><button type="button" class="switch" id="sMerken" aria-pressed="false">aus</button></div>
       <p id="sMsg" role="status"></p>
       <div class="row"><button class="btn primary" id="sApply" type="button">Übernehmen und neu starten</button><button class="btn ghost" id="sCancel" type="button">Abbrechen</button></div>
-      <p class="note">Wird in diesem Browser gemerkt. Unter „Sätze bearbeiten“ kannst du alles zusammen als Klassenpaket speichern.</p>
+      <p class="note">Wird mit Einwilligung in diesem Browser gemerkt. Unter „Sätze bearbeiten“ kannst du alles zusammen als Klassenpaket speichern.</p>
+      <p class="note"><b>Über dieses Spiel:</b> „Die Wortwurfbude“ von Sebastian Wolf · Lizenz CC BY-SA 4.0 · Version 1.1, Stand: Oktober 2026. Programmiert mit Unterstützung von KI (Claude, Anthropic). Idee, Inhalte und fachliche Prüfung: Sebastian Wolf. Lizenzen und Schriften: www.kommakatze.de/lizenzen.html</p>
     </div>
   </section>
 
@@ -650,6 +775,7 @@ body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--f-body);o
         <button class="btn ghost" id="edClose">Schließen</button>
       </div>
       <p>Ein Satz pro Zeile, darunter die Wortarten als Liste. Überschriften mit <span class="kbd">##</span> sind die Märchen – ihr Name hängt im Spiel als Schild unter der Bude, und für jedes Märchen gibt es einen Sticker.</p>
+      <p class="note"><b>Datenschutz:</b> Bitte keine echten Namen oder andere Angaben über Kinder in die Sätze schreiben.</p>
       <div class="ed-tools">
         <div class="chips" id="edChips" aria-label="Wortart-Zeile einfügen"></div>
         <div class="ed-actions">
@@ -1415,7 +1541,7 @@ const FS_OFF_SVG = strGridSVG(['............','...K....K...','...K....K...','KKK
 /* ------------------------------------------------------------------ Klang: eigene Walzer-Melodie + Effekte */
 const Snd = (() => {
   let ac = null, master, mus, sfx, lp, noiseBuf, timer = null, loopStart = 0, idx = 0, events = [], totalBeats = 0;
-  let musicOn = true, sfxOn = true;
+  let musicOn = false, sfxOn = true;
   const SPB = 60 / 138;
   const NOTE = {C:0, D:2, E:4, F:5, G:7, A:9, B:11};
   const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
@@ -1524,12 +1650,11 @@ const app = $('#app'), canvas = $('#scene'), ctx = canvas.getContext('2d');
 const hud = $('#hud'), bubble = $('#bubble'), bubbleText = $('#bubbleText'), bubbleActions = $('#bubbleActions'), tail = $('#tail'), live = $('#live');
 const tray = $('#tray'), wordList = $('#wordList'), menu = $('#menu'), teachBar = $('#teachBar'), councilEl = $('#council'), toastEl = $('#toast');
 const overlays = {title: $('#titleOv'), help: $('#helpOv'), lvl: $('#lvlOv'), end: $('#endOv'), ed: $('#edOv'), set: $('#setOv'), team: $('#teamOv'), tend: $('#teamEndOv'), album: $('#albumOv'), pause: $('#pauseOv')};
-const IN_CLAUDE = !!(window.claude && typeof window.claude.use === 'function');
 
-/* ------------------------------------------------------------------ Speicher: nur dieser Browser, keine Namen */
+/* ------------------------------------------------------------------ Speicher: nur dieser Browser, keine Namen, nur mit Einwilligung (KommaSpeicher) */
 const store = {
-  get(k, fb) { try { const v = localStorage.getItem('wortwurfbude.' + k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } },
-  set(k, v) { try { localStorage.setItem('wortwurfbude.' + k, JSON.stringify(v)); } catch (e) {} },
+  get(k, fb) { if (!KommaSpeicher.darf()) return fb; try { const v = localStorage.getItem('wortwurfbude.' + k); return v == null ? fb : JSON.parse(v); } catch (e) { return fb; } },
+  set(k, v) { if (!KommaSpeicher.darf()) return; try { localStorage.setItem('wortwurfbude.' + k, JSON.stringify(v)); } catch (e) {} },
 };
 
 /* ------------------------------------------------------------------ Zustand */
@@ -3061,10 +3186,6 @@ function copyResult(text, msgEl, box) {
   try { navigator.clipboard.writeText(text).then(() => { box.hidden = true; msgEl.textContent = 'Kopiert. Jetzt z. B. in Moodle, Teams oder ein Padlet einfügen.'; }, fallback); } catch (e) { fallback(); }
 }
 async function saveFile(filename, text) {
-  if (IN_CLAUDE) {
-    try { const dl = await window.claude.use('downloads'); if (!dl) return 'unavailable'; await dl.save({filename, data: text}); return 'saved'; }
-    catch (e) { return e && e.code === 'declined' ? 'declined' : e && e.code === 'rate_limited' ? 'busy' : 'unavailable'; }
-  }
   try {
     const url = URL.createObjectURL(new Blob([text], {type: 'text/plain;charset=utf-8'}));
     const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
@@ -3257,7 +3378,7 @@ let D = null;
 function openSettings() {
   toggleMenu(false);
   D = {enabled: S.enabled.slice(), start: S.start, need: S.need, poss: !!S.poss, kiste: S.kiste !== false};
-  $('#sMsg').textContent = '';
+  $('#sMsg').textContent = ''; zeigeMerken();
   renderSettings(); openOverlay('set');
 }
 function renderSettings() {
@@ -3456,6 +3577,15 @@ $('#edFile').addEventListener('change', e => {
 });
 $('#sPoss').addEventListener('click', () => { D.poss = !D.poss; renderSettings(); });
 $('#sKiste').addEventListener('click', () => { D.kiste = !D.kiste; renderSettings(); });
+/* Einwilligung: wirkt sofort, unabhängig von „Übernehmen“ */
+function zeigeMerken() { const m = $('#sMerken'); const ja = KommaSpeicher.darf(); m.setAttribute('aria-pressed', String(ja)); m.textContent = ja ? 'an' : 'aus'; }
+function speichereAlles() { saveSettings(); saveTC(); saveAlbum(); saveBude(); store.set('md', currentMD); }
+$('#sMerken').addEventListener('click', () => {
+  const ja = !KommaSpeicher.darf(); KommaSpeicher.setze(ja); if (ja) speichereAlles(); zeigeMerken();
+  $('#sMsg').textContent = ja ? 'Wird auf diesem Gerät gemerkt.' : 'Alle Spielstände auf diesem Gerät sind gelöscht.';
+});
+zeigeMerken();
+KommaSpeicher.frage('Die Wortwurfbude', speichereAlles);
 $('#edSave').addEventListener('click', async () => {
   const text = withFrontMatter($('#edText').value);
   const r = await saveFile(`wortwurfbude-klassenpaket-${fileDate()}.md`, text);
@@ -3632,10 +3762,9 @@ function start(data) {
   let roH = 0; const ro = new ResizeObserver(() => { const h = hud.offsetHeight; if (roH && h === roH && ro._w === app.clientWidth && ro._h === app.clientHeight) return; roH = h; ro._w = app.clientWidth; ro._h = app.clientHeight; computeLayout(); });
   ro.observe(app); ro.observe(hud);
   if (document.fonts) { document.fonts.load(`20px ${PIX_FONT}`).then(() => computeLayout()).catch(() => {}); document.fonts.ready.then(() => computeLayout()); }
-  window.claude?.hot?.snapshot?.(() => ({md: currentMD, board: G.board, settings: {...S}, team: {...TC}}));
   requestAnimationFrame(loop);
 }
-window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+start({});
 })();
 
 </script>

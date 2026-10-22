@@ -138,6 +138,7 @@ html[data-zeit="tag"] .nur-nacht { display: none; }
 /* Ton-Knopf: Das Symbol folgt dem Zustand, den startseite.js in aria-pressed schreibt */
 #ton-knopf[aria-pressed="true"] #ton-aus-bild,
 #ton-knopf:not([aria-pressed="true"]) #ton-an-bild { display: none; }
+#tageszeit-knopf[aria-pressed="true"] { background: var(--butter); }
 
 /* Menü „Für Lehrkräfte“ (details/summary, funktioniert auch ohne JavaScript) */
 .lehrkraefte { position: relative; }
@@ -166,6 +167,7 @@ html[data-zeit="tag"] .nur-nacht { display: none; }
 .menue-bild-liste { background: #CDEFE0; }
 .menue-titel { display: block; font-family: "Pixelify Sans", ui-monospace, monospace; font-size: 18px; font-weight: 600; line-height: 1.2; }
 .menue-text { display: block; font-size: 14px; line-height: 1.35; color: #4B3E66; margin-top: 2px; }
+.menue-hinweis { padding: 4px 10px 6px; font-size: 13px; line-height: 1.4; color: #6B5F82; }
 .menue-trenner { height: 0; margin: 6px 4px; border-top: 2px dashed #CDBB9C; }
 
 /* Pinnwand mit den Fallakten */
@@ -437,6 +439,7 @@ html[data-zeit="tag"] .nur-nacht { display: none; }
   display: flex; justify-content: flex-end; align-items: center; gap: 4px 24px; flex-wrap: wrap;
 }
 .boden a { display: inline-block; padding: 10px 2px; font-size: 17px; text-underline-offset: 4px; }
+.boden .boden-quer { margin-right: auto; }
 
 /* Bewegung */
 @keyframes fahrt { from { transform: translateX(-46px); } to { transform: translateX(124px); } }

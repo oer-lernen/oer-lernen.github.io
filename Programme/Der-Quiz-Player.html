@@ -3,8 +3,11 @@
 
 <head>
   <meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; font-src data:; media-src data: blob:; frame-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9Ii0xIC0xIDEyIDEyIiBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPgogIDxyZWN0IHg9Ii0xIiB5PSItMSIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiBmaWxsPSIjRkZGNERFIi8+CiAgPHBhdGggZmlsbD0iI0U4QTM1QyIgZD0iTTAgMGgxdjFoLTF6TTkgMGgxdjFoLTF6TTAgMWgydjFoLTJ6TTggMWgydjFoLTJ6TTAgMmgxdjFoLTF6TTIgMmgxdjFoLTF6TTcgMmgxdjFoLTF6TTkgMmgxdjFoLTF6TTAgM2gxMHYxaC0xMHpNMCA0aDEwdjFoLTEwek0wIDVoMnYxaC0yek00IDVoMnYxaC0yek04IDVoMnYxaC0yek0wIDZoMnYxaC0yek0zIDZoM3YxaC0zek03IDZoM3YxaC0zek0wIDdoNHYxaC00ek02IDdoNHYxaC00ek0xIDhoOHYxaC04ek0yIDloNnYxaC02eiIvPgogIDxwYXRoIGZpbGw9IiNDNDdBM0EiIGQ9Ik00IDNoMnYxaC0yek0wIDRoMXYxaC0xek05IDRoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiNGNEE2QjgiIGQ9Ik0xIDJoMXYxaC0xek04IDJoMXYxaC0xek00IDdoMnYxaC0yeiIvPgogIDxwYXRoIGZpbGw9IiM2Q0MwN0EiIGQ9Ik0yIDVoMnYxaC0yek02IDVoMnYxaC0yek0yIDZoMXYxaC0xek02IDZoMXYxaC0xeiIvPgogIDxwYXRoIGZpbGw9IiMyQTIxMzgiIGQ9Ik0zIDZoMXYxaC0xek03IDZoMXYxaC0xeiIvPgo8L3N2Zz4=">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Puzzle &amp; Quiz</title>
+  <title>Puzzle &amp; Quiz – Komma ermittelt</title>
   <meta name="description" content="Puzzles und Quizze mit einem fünfstelligen Code öffnen.">
   <style>
     @font-face {
@@ -661,7 +664,7 @@
       /* ---------- Texte ---------- */
       const PAGE_TITLE = S.titel || 'Puzzle & Quiz';
       $('#title').textContent = PAGE_TITLE;
-      document.title = PAGE_TITLE;
+      document.title = PAGE_TITLE + ' – Komma ermittelt';
       $('#sub').textContent = S.untertitel || '';
       (function foot() {
         const f = $('#foot');
@@ -676,11 +679,12 @@
         let allein = true; try { allein = window.top === window.self; } catch (e) { allein = false; }
         if (allein) {
           const r = document.createElement('span');
-          [['Impressum', '../impressum.html'], ['Datenschutz', '../datenschutz.html'], ['Lizenzen', '../lizenzen.html']].forEach(([label, href], i) => {
+          [['Zur Detektei', 'https://www.kommakatze.de/'], ['Impressum', 'https://www.kommakatze.de/impressum.html'], ['Datenschutz', 'https://www.kommakatze.de/datenschutz.html'], ['Lizenzen', 'https://www.kommakatze.de/lizenzen.html']].forEach(([label, href], i) => {
             if (i) r.append(' · '); const a = document.createElement('a'); a.href = href; a.target = '_blank'; a.rel = 'noopener'; a.textContent = label; r.append(a);
           });
           f.append(r);
         }
+        f.append(document.createElement('br'), 'Programmiert mit Unterstützung von KI (Claude, Anthropic). Idee, Inhalte und fachliche Prüfung: Sebastian Wolf.');
       })();
 
       /* ---------- Kacheln ---------- */
@@ -752,7 +756,7 @@
       function closePuzzle() {
         if (view.hidden) return;
         view.hidden = true; frame.src = 'about:blank'; document.body.style.overflow = '';
-        document.title = PAGE_TITLE;
+        document.title = PAGE_TITLE + ' – Komma ermittelt';
         current = null;
         input.value = ''; wrap.classList.remove('ok', 'nope'); msg.textContent = ''; paint();
         input.focus();
