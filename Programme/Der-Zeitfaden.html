@@ -4,6 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Der Zeitfaden</title>
+<script>
+/* Läuft das Spiel in der Detektei (als iframe), zeigt deren Leiste Impressum, Datenschutz und Lizenzen; die eigenen Links entfallen dann */
+try{if(window.top!==window.self)document.documentElement.classList.add('eingebettet');}catch(e){document.documentElement.classList.add('eingebettet');}
+</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: Märchenbild als Bühne, darauf eine Papierkarte mit dem Satz; darunter der feste Zeitfaden als Spielbrett mit Komma; darunter drei große Kärtchen. Ein bewusst gewählter Look (Nacht + Pastellpapier). */
@@ -49,6 +53,7 @@ h1{font-family:var(--f-book);font-size:clamp(2.3rem,7vw,3.6rem);line-height:1;ma
 .menu{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:6px}.menu .btn{width:100%}
 .titlefoot{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;justify-content:center;font-size:.85rem;color:#cfc6e6}
 .linkbtn{background:none;border:0;color:#cfc6e6;text-decoration:underline;text-underline-offset:3px;padding:4px}
+.eingebettet .nur-allein{display:none}
 .hold{position:relative;overflow:hidden;background:none;border:0;color:#a79fc7;font-family:var(--f-px);font-size:.68rem;padding:.35em .6em;box-shadow:0 0 0 1px #ffffff22}
 .hold .fill{position:absolute;inset:0 auto 0 0;width:0;background:#e9b94955}.hold .lbl{position:relative}
 
@@ -168,8 +173,6 @@ table.cj em{font-style:normal;background:#f6dc9399;padding:0 2px}
 .opt{display:flex;gap:10px;align-items:flex-start;background:#fffaf0;padding:10px 12px;box-shadow:0 0 0 2px var(--ink);font-family:var(--f-book);font-size:1rem;line-height:1.35;cursor:pointer}
 .opt input{margin-top:4px;accent-color:#7d5d8f;width:18px;height:18px}.opt small{display:block;color:var(--ink-soft)}
 .optrow{display:flex;flex-wrap:wrap;gap:8px}.optrow .opt{flex:1 1 150px}
-.legal h3{font-family:var(--f-px);font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;margin:18px 0 4px}
-.legal p{font-family:var(--f-book);font-size:1rem;line-height:1.5}.legal a{color:#6a4d7d}
 
 @media (max-width:700px){
   body{font-size:17px}
@@ -229,9 +232,9 @@ table.cj em{font-style:normal;background:#f6dc9399;padding:0 2px}
       <button class="hold" id="b-teach" title="Zwei Sekunden gedrückt halten" aria-label="Für Lehrkräfte: zwei Sekunden gedrückt halten"><span class="fill"></span><span class="lbl">Lehrkräfte</span></button>
       <button class="btn small ghost" id="b-mus" aria-pressed="false">♪ Musik</button>
       <button class="btn small ghost" data-fs>⛶ Vollbild</button>
-      <button class="linkbtn" data-legal="impressum">Impressum</button>
-      <button class="linkbtn" data-legal="datenschutz">Datenschutz</button>
-      <button class="linkbtn" data-legal="lizenz">Lizenz</button>
+      <a class="linkbtn nur-allein" href="../impressum.html" target="_blank" rel="noopener">Impressum</a>
+      <a class="linkbtn nur-allein" href="../datenschutz.html" target="_blank" rel="noopener">Datenschutz</a>
+      <a class="linkbtn nur-allein" href="../lizenzen.html" target="_blank" rel="noopener">Lizenzen</a>
     </div>
   </section>
 
@@ -751,26 +754,6 @@ function teacher(){overlay((card,next)=>{const s=S.set;
   const stop=()=>{cancelAnimationFrame(raf);f.style.width='0';};
   b.addEventListener('pointerdown',start);b.addEventListener('keydown',start);['pointerup','pointerleave','pointercancel','keyup','blur'].forEach(ev=>b.addEventListener(ev,stop));
   b.addEventListener('contextmenu',e=>e.preventDefault());})();
-
-/* ============ Rechtliches ============ */
-const LEGAL={
- impressum:`<h2>Impressum</h2><div class="legal"><h3>Angaben gemäß § 5 DDG</h3><p>Sebastian Wolf<br>Graf-Leopold-Ring 2<br>94099 Ruhstorf a.d.Rott<br>Deutschland</p>
-  <h3>Kontakt</h3><p>E-Mail: s.w.oer@outlook.de</p><h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3><p>Sebastian Wolf, Anschrift wie oben.</p>
-  <h3>Hinweis</h3><p>Dieses Lernspiel ist ein nichtkommerzielles, offenes Bildungsangebot (OER). Für die Inhalte verlinkter externer Seiten sind ausschließlich deren Betreiber verantwortlich.</p></div>`,
- datenschutz:`<h2>Datenschutz</h2><div class="legal"><h3>Verantwortlicher</h3><p>Sebastian Wolf, Graf-Leopold-Ring 2, 94099 Ruhstorf a.d.Rott, s.w.oer@outlook.de</p>
-  <h3>Grundsatz: so wenig Daten wie möglich</h3><p>Das Spiel verlangt keine Anmeldung und fragt keine Namen ab. Es verwendet keine Cookies, kein Tracking, keine Analysewerkzeuge und keine Werbung. Es lädt keine Schriften, Skripte, Bilder oder Klänge von fremden Servern. Grafiken und Klänge entstehen direkt im Browser.</p>
-  <h3>Vorlesefunktion</h3><p>Zum Vorlesen nutzt das Spiel ausschließlich Stimmen, die auf dem Gerät installiert sind. Ist keine solche deutsche Stimme vorhanden, bleibt das Vorlesen aus. Online-Stimmen werden nicht verwendet.</p>
-  <h3>Speicherung auf dem eigenen Gerät</h3><p>Gesammelte Sticker, gerettete Märchen und die Einstellungen der Lehrkraft werden im lokalen Speicher (localStorage) des Browsers auf diesem Gerät abgelegt. Diese Daten verlassen das Gerät nicht und enthalten keine personenbezogenen Angaben. Sie lassen sich im Lehrkräftemenü oder über die Browsereinstellungen jederzeit löschen.</p>
-  <h3>Hosting</h3><p>Die Seite wird über GitHub Pages bereitgestellt (GitHub, Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA). Beim Aufruf verarbeitet GitHub technisch notwendige Verbindungsdaten wie die IP-Adresse, um die Seite auszuliefern und abzusichern. Rechtsgrundlage ist Art. 6 Abs. 1 lit. f DSGVO; das berechtigte Interesse liegt in einer sicheren und stabilen Bereitstellung. Dabei kann es zu einer Übermittlung in die USA kommen. Einzelheiten: <a href="https://docs.github.com/de/site-policy/privacy-policies/github-general-privacy-statement" target="_blank" rel="noopener">Datenschutzerklärung von GitHub</a>.</p>
-  <h3>Ihre Rechte</h3><p>Sie haben das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung und Widerspruch (Art. 15–21 DSGVO) sowie das Recht auf Beschwerde bei einer Aufsichtsbehörde, zum Beispiel beim Bayerischen Landesamt für Datenschutzaufsicht (BayLDA), Promenade 18, 91522 Ansbach.</p></div>`,
- lizenz:`<h2>Lizenz</h2><div class="legal"><p><b>„Der Zeitfaden – Komma und die Zeitmotte“</b> von Sebastian Wolf steht unter der Lizenz <a href="https://creativecommons.org/licenses/by-sa/4.0/deed.de" target="_blank" rel="noopener">Creative Commons Namensnennung – Weitergabe unter gleichen Bedingungen 4.0 International (CC BY-SA 4.0)</a>.</p>
-  <p>Sie dürfen das Spiel teilen und bearbeiten, auch im Unterricht und in eigenen Materialien, wenn Sie den Urheber nennen, auf die Lizenz verlinken, Änderungen kenntlich machen und Ihre Bearbeitung unter derselben Lizenz weitergeben.</p>
-  <h3>Vorschlag für die Namensnennung</h3><p>„Der Zeitfaden“ von Sebastian Wolf, CC BY-SA 4.0</p>
-  <h3>Textgrundlage</h3><p>Die Märchensätze folgen den Kinder- und Hausmärchen der Brüder Grimm (gemeinfrei). Für das Spiel wurden sie gekürzt und teilweise in eine andere Zeitform gesetzt; die Handlung bleibt unverändert.</p>
-  <h3>Schriften und Grafik</h3><p>Es werden nur die Systemschriften des Geräts verwendet. Alle Pixelgrafiken und Klänge sind eigens für dieses Spiel erstellt.</p></div>`
-};
-function legal(k){overlay((card,next)=>{card.innerHTML=LEGAL[k]+'<div class="acts"><button class="btn" id="lx">Schließen</button></div>';$('lx').onclick=()=>next();});}
-document.querySelectorAll('[data-legal]').forEach(b=>b.onclick=()=>legal(b.dataset.legal));
 
 /* ============ Verknüpfungen ============ */
 buildBoard();
