@@ -17,6 +17,7 @@ SPIELE = [
     'Der-Zeitfaden.html',
     'Die-Faelscherwerkstatt.html',
     'Die-Wortwurfbude.html',
+    'Die-Bilderbuch-Werkstatt.html',
 ]
 
 code = QUELLE.read_text(encoding='utf-8').strip()

@@ -134,8 +134,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   /* ---------- Komma wecken; nach vier Sekunden schläft sie wieder ein ---------- */
   var schlafUhr = null;
-  function setzeWach(wach) {
+  function setzeWach(wach, satz) {
     $('tisch').classList.toggle('wach', wach);
+    $('miau').textContent = satz || 'Miau!';
     $('miau').hidden = !wach;
     $('zzz').hidden = wach;
     $('komma-knopf').setAttribute('aria-label', wach ? 'Komma ist wach' : 'Komma wecken');
@@ -275,6 +276,15 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       menue.open = false;
       piep([[523, 0.07], [784, 0.14]]);
+      /* data-komma (Easter-Egg): Komma wacht auf, sagt ihren Satz, dann öffnet sich das Ziel */
+      var satz = link.getAttribute('data-komma');
+      if (satz) {
+        clearTimeout(schlafUhr);
+        setzeWach(true, satz);
+        schlafUhr = setTimeout(function () { setzeWach(false); }, 4000);
+        setTimeout(function () { gehe(link.getAttribute('data-route')); }, 1100);
+        return;
+      }
       gehe(link.getAttribute('data-route'));
     });
   });

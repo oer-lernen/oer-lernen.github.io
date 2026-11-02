@@ -40,6 +40,10 @@ und für „Code-Liste prüfen“.
   der Quiz-Player und die Generatoren kleine Links auf dieselben Seiten (Impressum, Datenschutz, Lizenzen).
   Erkennung: Ein kurzes Skript im Kopf jeder Datei setzt die Klasse `eingebettet`, wenn die Datei in einem iframe läuft.
 
+## Geheimfach
+
+- Der Pinselbecher auf Idas Schreibtisch öffnet „Kommas Bilderbuch-Werkstatt“ (Easter-Egg, `#geheim/bilderbuch`); Komma sagt vorher „Miau! Lass uns etwas gestalten!“.
+
 ## Tag und Nacht
 
 - Die Startseite wechselt nach der Uhrzeit des Geräts (7 bis 19 Uhr Tag, sonst Nacht).

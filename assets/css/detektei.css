@@ -263,6 +263,8 @@ html[data-zeit="tag"] .nur-nacht { display: none; }
 .lampen-knopf:focus-visible { outline-offset: 2px; }
 .zzz { position: absolute; left: 41%; top: 6%; font-size: 22px; letter-spacing: 2px; color: var(--schrift); pointer-events: none; }
 .zzz span { display: inline-block; }
+.pinsel-knopf { position: absolute; left: 86%; top: 49%; width: 8%; height: 26%; min-width: 32px; }
+.pinsel-knopf:focus-visible { outline-offset: 2px; }
 .miau {
   position: absolute; left: 36%; top: 3%; padding: 4px 10px; pointer-events: none;
   background: var(--papier); color: var(--dunkel); border: 3px solid var(--dunkel);
@@ -544,3 +546,4 @@ html.buehne-offen, html.buehne-offen body { overflow: hidden; }
   .blatt { padding: 22px 18px 24px; }
   .blatt h1 { font-size: 28px; }
 }
+.blatt h3 { font-size: 1rem; margin: 1.2em 0 .3em; }

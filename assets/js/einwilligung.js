@@ -32,6 +32,8 @@
         if (PRAEFIXE.some(function (p) { return k.indexOf(p) === 0; })) weg.push(k);
       }
       weg.forEach(function (k) { localStorage.removeItem(k); });
+      /* Kommas Bilderbuch-Werkstatt speichert in IndexedDB */
+      if (window.indexedDB) indexedDB.deleteDatabase('kommas-bilderbuch-werkstatt');
     } catch (e) { /* ohne Speicher gibt es nichts zu löschen */ }
   }
 
@@ -61,7 +63,8 @@
   }
 
   /* Fragt einmal, solange nicht eingewilligt wurde; beiJa() läuft nach „Ja, merken“ */
-  function frage(name, beiJa) {
+  /* was (optional): was gemerkt wird, z. B. „deine Bücher, Bilder und Einstellungen“ */
+  function frage(name, beiJa, was) {
     if (zustand !== null) return;
     var los = function () {
       if (zustand !== null || document.querySelector('.ke-hg')) return;
@@ -73,11 +76,11 @@
         '<div class="ke-karte" role="dialog" aria-modal="true" aria-labelledby="ke-titel" aria-describedby="ke-text" tabindex="-1">' +
         '<h2 id="ke-titel">Eine Frage an die Erwachsenen</h2>' +
         '<p id="ke-text"></p>' +
-        '<p>Die Angaben bleiben im Browser dieses Geräts und gelten für alle Spiele der Sprachdetektei. Es werden keine Cookies gesetzt, keine Namen gespeichert und keine Daten übertragen. Ändern lässt sich das jederzeit unter „Für Lehrkräfte“.</p>' +
+        '<p>Die Angaben bleiben im Browser dieses Geräts und gelten für alle Spiele der Sprachdetektei. Es werden keine Cookies gesetzt, keine Namen gespeichert und keine Daten übertragen. Ändern lässt sich das jederzeit unter „Für Lehrkräfte“ bzw. in den Einstellungen.</p>' +
         '<div class="ke-reihe"><button type="button" class="ke-knopf ke-ja">Ja, merken</button><button type="button" class="ke-knopf ke-nein">Nein, nichts speichern</button></div>' +
         '<p class="ke-klein">Ohne Speichern funktioniert alles, der Stand ist aber nach dem Schließen weg. <a class="ke-link" href="' + DATENSCHUTZ + '" target="_blank" rel="noopener">Datenschutzerklärung lesen</a></p>' +
         '</div>';
-      hg.querySelector('#ke-text').textContent = 'Darf „' + name + '“ auf diesem Gerät merken, wie weit gespielt wurde (Fortschritt, Sticker und Einstellungen)?';
+      hg.querySelector('#ke-text').textContent = 'Darf „' + name + '“ auf diesem Gerät merken, ' + (was || 'wie weit gespielt wurde (Fortschritt, Sticker und Einstellungen)') + '?';
       var zu = function (ja) {
         if (hg.parentNode) hg.parentNode.removeChild(hg);
         setze(ja);
